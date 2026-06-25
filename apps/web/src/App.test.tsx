@@ -28,4 +28,9 @@ describe("App", () => {
     render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={["/diary"]}><App /></MemoryRouter>);
     expect(screen.getByText("Retrorganizer")).toBeInTheDocument();
   });
+
+  it("shows the trash button in the header", () => {
+    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={["/diary"]}><App /></MemoryRouter>);
+    expect(screen.getByRole("button", { name: "Corbeille" })).toBeInTheDocument();
+  });
 });

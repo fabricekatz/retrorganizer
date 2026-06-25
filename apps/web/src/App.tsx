@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { Tab, tokens, moduleAccent } from "@retrorganizer/ui";
 import { SECTIONS } from "./routes/sections";
@@ -10,11 +11,13 @@ import { CalendarModule } from "./calendar/CalendarModule";
 import { TasksModule } from "./tasks/TasksModule";
 import { NotesModule } from "./notes/NotesModule";
 import { GlobalSearchBar } from "./search/GlobalSearchBar";
+import { TrashPanel } from "./trash/TrashPanel";
 
 export function App() {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [trashOpen, setTrashOpen] = useState(false);
 
   if (loading) return <div style={{ padding: tokens.space.xl }}>Chargement…</div>;
   if (!user) return <LoginScreen />;
@@ -26,8 +29,10 @@ export function App() {
         font: `13px ${tokens.font.body}` }}>
         <strong style={{ color: tokens.color.ink }}>Retrorganizer</strong>
         <GlobalSearchBar />
+        <button type="button" onClick={() => setTrashOpen((o) => !o)}>Corbeille</button>
         <button onClick={() => signOut()}>Déconnexion</button>
       </header>
+      {trashOpen && <TrashPanel onClose={() => setTrashOpen(false)} />}
 
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <nav role="tablist" aria-orientation="vertical"
