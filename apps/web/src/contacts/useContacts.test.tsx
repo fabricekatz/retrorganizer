@@ -13,11 +13,12 @@ vi.mock("@retrorganizer/core", () => ({
     softDelete: (...a: unknown[]) => softDelete(...a),
   },
 }));
-vi.mock("../auth/AuthProvider", () => ({
-  useAuth: () => ({ user: { uid: "u1", email: "a@x.io" } }),
-}));
+
+let mockUser: { uid: string; email: string } | null = { uid: "u1", email: "a@x.io" };
+vi.mock("../auth/AuthProvider", () => ({ useAuth: () => ({ user: mockUser }) }));
 
 beforeEach(() => {
+  mockUser = { uid: "u1", email: "a@x.io" };
   listByOwner.mockReset().mockResolvedValue([
     { id: "c1", ownerId: "u1", displayName: "Ada", phones: [], emails: [], addresses: [], webLinks: [], importantDates: [], customFields: [], categoryId: null, tags: [], firstName: "", lastName: "", createdAt: 1, updatedAt: 1, deletedAt: null },
   ]);
@@ -39,5 +40,21 @@ describe("useContacts", () => {
     await act(async () => { await result.current.create({ displayName: "Grace" } as never); });
     expect(create).toHaveBeenCalledWith("u1", { displayName: "Grace" });
     expect(listByOwner).toHaveBeenCalledTimes(2);
+  });
+
+  it("returns empty contacts without loading when user is null", async () => {
+    mockUser = null;
+    const { result } = renderHook(() => useContacts());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.contacts).toEqual([]);
+    expect(listByOwner).not.toHaveBeenCalled();
+  });
+
+  it("sets error state when listByOwner rejects", async () => {
+    listByOwner.mockRejectedValue(new Error("boom"));
+    const { result } = renderHook(() => useContacts());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.error).toBe("boom");
+    expect(result.current.contacts).toEqual([]);
   });
 });

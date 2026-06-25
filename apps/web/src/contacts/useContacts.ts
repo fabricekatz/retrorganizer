@@ -36,18 +36,30 @@ export function useContacts(): UseContacts {
 
   const create = useCallback(async (d: ContactDraft) => {
     if (!uid) return;
-    await contactsRepo.create(uid, d);
-    await reload();
+    try {
+      await contactsRepo.create(uid, d);
+      await reload();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Échec de l'enregistrement");
+    }
   }, [uid, reload]);
 
   const update = useCallback(async (id: string, d: ContactDraft) => {
-    await contactsRepo.update(id, d);
-    await reload();
+    try {
+      await contactsRepo.update(id, d);
+      await reload();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Échec de l'enregistrement");
+    }
   }, [reload]);
 
   const remove = useCallback(async (id: string) => {
-    await contactsRepo.softDelete(id);
-    await reload();
+    try {
+      await contactsRepo.softDelete(id);
+      await reload();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Échec de la suppression");
+    }
   }, [reload]);
 
   return { contacts, loading, error, create, update, remove, reload };
