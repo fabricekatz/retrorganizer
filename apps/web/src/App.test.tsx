@@ -10,14 +10,14 @@ vi.mock("./auth/AuthProvider", () => ({
 
 describe("App", () => {
   it("renders the 8 section tabs for an authenticated user", () => {
-    render(<MemoryRouter initialEntries={["/diary"]}><App /></MemoryRouter>);
+    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={["/diary"]}><App /></MemoryRouter>);
     const tabs = screen.getAllByRole("tab");
     expect(tabs).toHaveLength(8);
     expect(screen.getByRole("tab", { name: "Address" })).toBeInTheDocument();
   });
 
   it("shows the Retrorganizer wordmark in the menu bar", () => {
-    render(<MemoryRouter initialEntries={["/diary"]}><App /></MemoryRouter>);
+    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={["/diary"]}><App /></MemoryRouter>);
     expect(screen.getByText("Retrorganizer")).toBeInTheDocument();
   });
 });
