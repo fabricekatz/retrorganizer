@@ -28,12 +28,12 @@ export function TasksModule() {
 
   async function onToggleComplete(t: Task) {
     if (t.recurrence && t.dueDate !== null && t.status !== "done") {
-      await update(t.id, {
-        dueDate: nextOccurrenceAfter(t.recurrence, t.dueDate) ?? t.dueDate,
-        status: "todo",
-        completedAt: null,
-      });
-      return;
+      const next = nextOccurrenceAfter(t.recurrence, t.dueDate);
+      if (next !== null) {
+        await update(t.id, { dueDate: next, status: "todo", completedAt: null });
+        return;
+      }
+      // recurrence exhausted -> fall through to mark done
     }
     if (t.status === "done") await update(t.id, { status: "todo", completedAt: null });
     else await update(t.id, { status: "done", completedAt: Date.now() });
