@@ -30,8 +30,8 @@ export function MonthView({ year, month, occurrences, onSelectDay, onSelectOccur
                 background: tokens.color.surface, cursor: "pointer",
                 color: inMonth ? tokens.color.ink : tokens.color.muted }}>
               <div style={{ textAlign: "right" }}>{new Date(cell).getDate()}</div>
-              {dayOccs.map((o, i) => (
-                <button key={i} type="button"
+              {dayOccs.map((o) => (
+                <button key={`${o.event.id}-${o.start}`} type="button"
                   onClick={(e) => { e.stopPropagation(); onSelectOccurrence(o); }}
                   style={{ display: "block", width: "100%", textAlign: "left", border: "none",
                     borderRadius: tokens.radius.sm, marginTop: 2, padding: "1px 4px", cursor: "pointer",
