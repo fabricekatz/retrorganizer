@@ -12,6 +12,7 @@ import { TasksModule } from "./tasks/TasksModule";
 import { NotesModule } from "./notes/NotesModule";
 import { GlobalSearchBar } from "./search/GlobalSearchBar";
 import { TrashPanel } from "./trash/TrashPanel";
+import { ReminderHost } from "./reminders/ReminderHost";
 
 export function App() {
   const { user, loading, signOut } = useAuth();
@@ -33,6 +34,7 @@ export function App() {
         <button onClick={() => signOut()}>Déconnexion</button>
       </header>
       {trashOpen && <TrashPanel onClose={() => setTrashOpen(false)} />}
+      <ReminderHost />
 
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <nav role="tablist" aria-orientation="vertical"
