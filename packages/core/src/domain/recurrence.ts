@@ -42,3 +42,9 @@ export function expandEvents(events: Event[], rangeStart: number, rangeEnd: numb
     .flatMap((e) => expandEvent(e, rangeStart, rangeEnd))
     .sort((a, b) => a.start - b.start);
 }
+
+export function nextOccurrenceAfter(recurrence: string, afterMs: number): number | null {
+  const rule = rrulestr(`DTSTART:${toICalUtc(afterMs)}\nRRULE:${recurrence}`);
+  const next = rule.after(new Date(afterMs), false);
+  return next ? next.getTime() : null;
+}

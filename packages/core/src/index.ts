@@ -6,6 +6,7 @@ export * from "./domain/event";
 export * from "./domain/recurrence";
 export * from "./domain/calendarGrid";
 export * from "./domain/task";
+export * from "./domain/taskQuery";
 export * from "./firebase/app";
 export * from "./repositories/base";
 export * from "./repositories/contacts";
