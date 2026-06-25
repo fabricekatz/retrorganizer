@@ -3,6 +3,7 @@ export * from "./domain/contact";
 export * from "./domain/contactDraft";
 export * from "./domain/contactQuery";
 export * from "./domain/event";
+export * from "./domain/recurrence";
 export * from "./firebase/app";
 export * from "./repositories/base";
 export * from "./repositories/contacts";
