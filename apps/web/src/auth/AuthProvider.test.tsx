@@ -22,8 +22,15 @@ function Probe() {
   return <div>{loading ? "loading" : user ? `user:${user.uid}` : "anon"}</div>;
 }
 
+type AuthValueRef = ReturnType<typeof useAuth>;
+let capturedAuth: AuthValueRef | null = null;
+function CaptureAuth() {
+  capturedAuth = useAuth();
+  return null;
+}
+
 describe("AuthProvider", () => {
-  beforeEach(() => { authCallback = () => {}; });
+  beforeEach(() => { authCallback = () => {}; capturedAuth = null; });
 
   it("exposes the authenticated user once auth state resolves", () => {
     render(<AuthProvider><Probe /></AuthProvider>);
@@ -36,5 +43,19 @@ describe("AuthProvider", () => {
     render(<AuthProvider><Probe /></AuthProvider>);
     act(() => authCallback(null));
     expect(screen.getByText("anon")).toBeInTheDocument();
+  });
+
+  it("delegates signInEmail and signInGoogle to the correct firebase/auth functions", async () => {
+    const { signInWithEmailAndPassword, signInWithPopup } = await import("firebase/auth");
+    render(<AuthProvider><CaptureAuth /></AuthProvider>);
+    act(() => authCallback(null));
+
+    await act(async () => { await capturedAuth!.signInEmail("ada@x.io", "pw"); });
+    expect(signInWithEmailAndPassword).toHaveBeenCalledWith(
+      expect.anything(), "ada@x.io", "pw"
+    );
+
+    await act(async () => { await capturedAuth!.signInGoogle(); });
+    expect(signInWithPopup).toHaveBeenCalled();
   });
 });

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   signInWithPopup, GoogleAuthProvider, signOut as fbSignOut,
@@ -29,14 +29,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, [auth]);
 
-  const value: AuthValue = {
+  const value = useMemo<AuthValue>(() => ({
     user,
     loading,
     signInEmail: async (e, p) => { await signInWithEmailAndPassword(auth, e, p); },
     signUpEmail: async (e, p) => { await createUserWithEmailAndPassword(auth, e, p); },
     signInGoogle: async () => { await signInWithPopup(auth, new GoogleAuthProvider()); },
     signOut: async () => { await fbSignOut(auth); },
-  };
+  }), [user, loading, auth]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

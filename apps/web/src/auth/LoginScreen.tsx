@@ -19,6 +19,15 @@ export function LoginScreen() {
     }
   }
 
+  async function handleGoogle() {
+    setError(null);
+    try {
+      await signInGoogle();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Échec de connexion");
+    }
+  }
+
   return (
     <div style={{ maxWidth: 360, margin: "10vh auto", font: `14px ${tokens.font.body}` }}>
       <h1 style={{ color: tokens.color.ink }}>Retrorganizer</h1>
@@ -31,7 +40,7 @@ export function LoginScreen() {
           style={{ display: "block", width: "100%", marginBottom: tokens.space.sm }} />
         <button type="submit">{mode === "in" ? "Se connecter" : "Créer un compte"}</button>
       </form>
-      <button onClick={() => signInGoogle()} style={{ marginTop: tokens.space.sm }}>
+      <button onClick={handleGoogle} style={{ marginTop: tokens.space.sm }}>
         Continuer avec Google
       </button>
       <button onClick={() => setMode(mode === "in" ? "up" : "in")}
