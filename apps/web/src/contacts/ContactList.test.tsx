@@ -16,7 +16,7 @@ describe("ContactList", () => {
       query="" onQueryChange={() => {}} sortKey="name" onSortKeyChange={() => {}} />);
     expect(screen.getByRole("button", { name: /Ada Lovelace/ })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Grace Hopper/ }));
-    expect(onSelect).toHaveBeenCalledWith(contacts[1]);
+    expect(onSelect).toHaveBeenCalledWith(contacts[1]!);
   });
 
   it("typing in search calls onQueryChange", () => {

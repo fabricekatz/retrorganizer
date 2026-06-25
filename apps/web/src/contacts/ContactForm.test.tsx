@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { emptyDraft } from "@retrorganizer/core";
+import type { ContactDraft } from "@retrorganizer/core";
 import { ContactForm } from "./ContactForm";
 
 describe("ContactForm", () => {
@@ -17,7 +18,7 @@ describe("ContactForm", () => {
     fireEvent.click(screen.getByRole("button", { name: "Enregistrer" }));
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
-    const draft = onSubmit.mock.calls[0]![0] as ReturnType<typeof onSubmit>;
+    const draft = onSubmit.mock.calls[0]![0] as ContactDraft;
     expect(draft.firstName).toBe("Ada");
     expect(draft.displayName).toBe("Ada Lovelace"); // filled by withDisplayName
     expect(draft.phones).toEqual([{ label: "mobile", value: "+33 1" }]);
