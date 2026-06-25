@@ -12,6 +12,9 @@
   "dependencies": {
     "@retrorganizer/core": "workspace:*",
     "@retrorganizer/ui": "workspace:*",
+    "@tiptap/pm": "^3.27.1",
+    "@tiptap/react": "^3.27.1",
+    "@tiptap/starter-kit": "^3.27.1",
     "firebase": "^12.15.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
