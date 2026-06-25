@@ -9,6 +9,9 @@ vi.mock("../contacts/useContacts", () => ({
 vi.mock("../calendar/useEvents", () => ({
   useEvents: () => ({ events: [{ id: "e1", title: "Réunion" }], loading: false }),
 }));
+vi.mock("../categories/useCategories", () => ({
+  useCategories: () => ({ categories: [], loading: false, error: null, createCategory: vi.fn(), updateCategory: vi.fn(), removeCategory: vi.fn(), reload: vi.fn() }),
+}));
 
 describe("TaskForm", () => {
   it("submits a draft with priority, due date, a subtask, and an event link", () => {
@@ -21,6 +24,8 @@ describe("TaskForm", () => {
     fireEvent.change(screen.getByLabelText("Sous-étape titre 1"), { target: { value: "Plan" } });
     fireEvent.change(screen.getByLabelText("Événement lié"), { target: { value: "e1" } });
     fireEvent.click(screen.getByLabelText("Ada Lovelace"));
+    fireEvent.change(screen.getByLabelText("Ajouter un tag"), { target: { value: "courses" } });
+    fireEvent.keyDown(screen.getByLabelText("Ajouter un tag"), { key: "Enter" });
     fireEvent.click(screen.getByRole("button", { name: "Enregistrer" }));
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
@@ -31,6 +36,7 @@ describe("TaskForm", () => {
     expect(d.subtasks).toEqual([{ title: "Plan", done: false }]);
     expect(d.eventId).toBe("e1");
     expect(d.contactIds).toEqual(["c1"]);
+    expect(d.tags).toEqual(["courses"]);
   });
 
   it("clearing the due date sets dueDate to null", () => {

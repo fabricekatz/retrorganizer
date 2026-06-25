@@ -4,6 +4,10 @@ import { emptyDraft } from "@retrorganizer/core";
 import type { ContactDraft } from "@retrorganizer/core";
 import { ContactForm } from "./ContactForm";
 
+vi.mock("../categories/useCategories", () => ({
+  useCategories: () => ({ categories: [], loading: false, error: null, createCategory: vi.fn(), updateCategory: vi.fn(), removeCategory: vi.fn(), reload: vi.fn() }),
+}));
+
 describe("ContactForm", () => {
   it("submits a draft with names, a phone, and an address", () => {
     const onSubmit = vi.fn();
@@ -15,6 +19,8 @@ describe("ContactForm", () => {
     fireEvent.change(screen.getByLabelText("Téléphone valeur 1"), { target: { value: "+33 1" } });
     fireEvent.click(screen.getByRole("button", { name: "+ Adresse" }));
     fireEvent.change(screen.getByLabelText("Adresse ville 1"), { target: { value: "Paris" } });
+    fireEvent.change(screen.getByLabelText("Ajouter un tag"), { target: { value: "vip" } });
+    fireEvent.keyDown(screen.getByLabelText("Ajouter un tag"), { key: "Enter" });
     fireEvent.click(screen.getByRole("button", { name: "Enregistrer" }));
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
@@ -23,6 +29,7 @@ describe("ContactForm", () => {
     expect(draft.displayName).toBe("Ada Lovelace"); // filled by withDisplayName
     expect(draft.phones).toEqual([{ label: "mobile", value: "+33 1" }]);
     expect(draft.addresses).toEqual([{ label: "", street: "", city: "Paris", postalCode: "", country: "" }]);
+    expect(draft.tags).toEqual(["vip"]);
   });
 
   it("pre-fills from initial draft", () => {
