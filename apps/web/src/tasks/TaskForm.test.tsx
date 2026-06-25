@@ -32,4 +32,15 @@ describe("TaskForm", () => {
     expect(d.eventId).toBe("e1");
     expect(d.contactIds).toEqual(["c1"]);
   });
+
+  it("clearing the due date sets dueDate to null", () => {
+    const onSubmit = vi.fn();
+    render(<TaskForm onSubmit={onSubmit} onCancel={() => {}} />);
+    fireEvent.change(screen.getByLabelText("Titre"), { target: { value: "X" } });
+    fireEvent.change(screen.getByLabelText("Échéance"), { target: { value: "2026-01-10" } });
+    fireEvent.change(screen.getByLabelText("Échéance"), { target: { value: "" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enregistrer" }));
+    const d = onSubmit.mock.calls[0]![0] as import("@retrorganizer/core").TaskDraft;
+    expect(d.dueDate).toBeNull();
+  });
 });

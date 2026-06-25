@@ -43,7 +43,7 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
           style={{ display: "block", width: "100%" }} />
       </label>
       <label>Description
-        <textarea aria-label="Description" value={draft.description} onChange={(e) => set("description", e.target.value)}
+        <textarea aria-label="Description" value={draft.description ?? ""} onChange={(e) => set("description", e.target.value)}
           style={{ display: "block", width: "100%" }} />
       </label>
       <label>Priorité
