@@ -46,4 +46,12 @@ describe("useEvents", () => {
     expect(result.current.events).toEqual([]);
     expect(listByOwner).not.toHaveBeenCalled();
   });
+
+  it("sets error when create rejects", async () => {
+    create.mockRejectedValue(new Error("boom"));
+    const { result } = renderHook(() => useEvents());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    await act(async () => { await result.current.create({ title: "Bad" } as never); });
+    expect(result.current.error).toBe("boom");
+  });
 });
