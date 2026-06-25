@@ -20,7 +20,7 @@ export function useContacts(): UseContacts {
   const [error, setError] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    if (!uid) { setContacts([]); setLoading(false); return; }
+    if (!uid) { setContacts([]); setError(null); setLoading(false); return; }
     setLoading(true);
     setError(null);
     try {
@@ -36,30 +36,21 @@ export function useContacts(): UseContacts {
 
   const create = useCallback(async (d: ContactDraft) => {
     if (!uid) return;
-    try {
-      await contactsRepo.create(uid, d);
-      await reload();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Échec de l'enregistrement");
-    }
+    try { await contactsRepo.create(uid, d); }
+    catch (e) { setError(e instanceof Error ? e.message : "Échec de l'enregistrement"); return; }
+    await reload();
   }, [uid, reload]);
 
   const update = useCallback(async (id: string, d: ContactDraft) => {
-    try {
-      await contactsRepo.update(id, d);
-      await reload();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Échec de l'enregistrement");
-    }
+    try { await contactsRepo.update(id, d); }
+    catch (e) { setError(e instanceof Error ? e.message : "Échec de l'enregistrement"); return; }
+    await reload();
   }, [reload]);
 
   const remove = useCallback(async (id: string) => {
-    try {
-      await contactsRepo.softDelete(id);
-      await reload();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Échec de la suppression");
-    }
+    try { await contactsRepo.softDelete(id); }
+    catch (e) { setError(e instanceof Error ? e.message : "Échec de la suppression"); return; }
+    await reload();
   }, [reload]);
 
   return { contacts, loading, error, create, update, remove, reload };

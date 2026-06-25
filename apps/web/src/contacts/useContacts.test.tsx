@@ -57,4 +57,17 @@ describe("useContacts", () => {
     expect(result.current.error).toBe("boom");
     expect(result.current.contacts).toEqual([]);
   });
+
+  it("surfaces a load error (not a save error) when reload fails after a successful create", async () => {
+    // first load ok, create ok, reload (2nd listByOwner) rejects
+    listByOwner.mockReset()
+      .mockResolvedValueOnce([])
+      .mockRejectedValueOnce(new Error("load failed"));
+    create.mockReset().mockResolvedValue(undefined);
+    const { result } = renderHook(() => useContacts());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    await act(async () => { await result.current.create({ displayName: "Z" } as never); });
+    expect(create).toHaveBeenCalled();
+    expect(result.current.error).toBe("load failed");
+  });
 });
