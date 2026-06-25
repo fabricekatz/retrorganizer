@@ -2,7 +2,16 @@
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build": { "dependsOn": ["^build"], "outputs": ["dist/**"] },
-    "test": { "dependsOn": ["^build"] },
+    "test": {
+      "dependsOn": ["^build"],
+      "env": [
+        "FIRESTORE_EMULATOR_HOST",
+        "FIREBASE_AUTH_EMULATOR_HOST",
+        "FIREBASE_EMULATOR_HUB",
+        "FIREBASE_FIRESTORE_EMULATOR_ADDRESS",
+        "FIREBASE_CONFIG"
+      ]
+    },
     "lint": {},
     "typecheck": { "dependsOn": ["^build"] }
   }
