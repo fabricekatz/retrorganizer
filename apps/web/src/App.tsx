@@ -6,6 +6,7 @@ import { SectionPlaceholder } from "./routes/SectionPlaceholder";
 import { useAuth } from "./auth/AuthProvider";
 import { LoginScreen } from "./auth/LoginScreen";
 import { ContactsModule } from "./contacts/ContactsModule";
+import { CalendarModule } from "./calendar/CalendarModule";
 
 export function App() {
   const { user, loading, signOut } = useAuth();
@@ -40,11 +41,13 @@ export function App() {
             {SECTIONS.map((s) => (
               <Route key={s.id} path={s.path}
                 element={
-                  s.id === "address"
-                    ? <ContactsModule />
-                    : s.mvp
-                      ? <SectionPlaceholder label={s.label} />
-                      : <ComingSoon label={s.label} />
+                  s.id === "diary"
+                    ? <CalendarModule />
+                    : s.id === "address"
+                      ? <ContactsModule />
+                      : s.mvp
+                        ? <SectionPlaceholder label={s.label} />
+                        : <ComingSoon label={s.label} />
                 } />
             ))}
             <Route path="*" element={<Navigate to="/diary" replace />} />
