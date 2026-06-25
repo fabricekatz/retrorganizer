@@ -8,7 +8,6 @@ const HEADER = [
   "categoryId", "tags", "phones", "emails", "addresses", "webLinks",
   "importantDates", "customFields",
 ] as const;
-const JSON_COLS = new Set(["tags", "phones", "emails", "addresses", "webLinks", "importantDates", "customFields"]);
 
 function quote(cell: string): string {
   if (/[",\r\n]/.test(cell)) return `"${cell.replace(/"/g, '""')}"`;
