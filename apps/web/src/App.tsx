@@ -7,6 +7,7 @@ import { useAuth } from "./auth/AuthProvider";
 import { LoginScreen } from "./auth/LoginScreen";
 import { ContactsModule } from "./contacts/ContactsModule";
 import { CalendarModule } from "./calendar/CalendarModule";
+import { TasksModule } from "./tasks/TasksModule";
 
 export function App() {
   const { user, loading, signOut } = useAuth();
@@ -43,11 +44,13 @@ export function App() {
                 element={
                   s.id === "diary"
                     ? <CalendarModule />
-                    : s.id === "address"
-                      ? <ContactsModule />
-                      : s.mvp
-                        ? <SectionPlaceholder label={s.label} />
-                        : <ComingSoon label={s.label} />
+                    : s.id === "todo"
+                      ? <TasksModule />
+                      : s.id === "address"
+                        ? <ContactsModule />
+                        : s.mvp
+                          ? <SectionPlaceholder label={s.label} />
+                          : <ComingSoon label={s.label} />
                 } />
             ))}
             <Route path="*" element={<Navigate to="/diary" replace />} />
