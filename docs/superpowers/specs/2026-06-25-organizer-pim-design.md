@@ -1,4 +1,4 @@
-# Organizer — Spec de conception (MVP 1)
+# Retrorganizer — Spec de conception (MVP 1)
 
 > PIM « organiseur de bureau » inspiré de Lotus Organizer.
 > Web responsive d'abord (desktop prioritaire), mobile en V2.
@@ -21,6 +21,9 @@
 | UI | Rétro « esprit » moderne | Évite le risque juridique du clone littéral |
 | Chiffrement au niveau du champ (E2E) | **Reporté en V2** | MVP s'appuie sur chiffrement at-rest Firestore + Security Rules |
 | Périmètre 1er livrable | MVP 1 du PRD | Calendrier, Tâches, Contacts, Notes, recherche, rappels, import/export ICS/vCard, coque rétro |
+| Nom produit | **Retrorganizer** | |
+| Auth | Email/mot de passe + OAuth Google | Firebase Auth |
+| Éditeur de notes | Tiptap | Sérialisation JSON |
 
 ---
 
