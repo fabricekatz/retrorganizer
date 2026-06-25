@@ -8,6 +8,7 @@ import { LoginScreen } from "./auth/LoginScreen";
 import { ContactsModule } from "./contacts/ContactsModule";
 import { CalendarModule } from "./calendar/CalendarModule";
 import { TasksModule } from "./tasks/TasksModule";
+import { NotesModule } from "./notes/NotesModule";
 
 export function App() {
   const { user, loading, signOut } = useAuth();
@@ -48,9 +49,11 @@ export function App() {
                       ? <TasksModule />
                       : s.id === "address"
                         ? <ContactsModule />
-                        : s.mvp
-                          ? <SectionPlaceholder label={s.label} />
-                          : <ComingSoon label={s.label} />
+                        : s.id === "notepad"
+                          ? <NotesModule />
+                          : s.mvp
+                            ? <SectionPlaceholder label={s.label} />
+                            : <ComingSoon label={s.label} />
                 } />
             ))}
             <Route path="*" element={<Navigate to="/diary" replace />} />
