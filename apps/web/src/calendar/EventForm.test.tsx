@@ -37,6 +37,23 @@ describe("EventForm", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(/fin/i);
   });
 
+  it("ignores an empty-string clear on Début and keeps previous start value", () => {
+    const onSubmit = vi.fn();
+    render(<EventForm onSubmit={onSubmit} onCancel={() => {}} />);
+    // Set a valid start
+    fireEvent.change(screen.getByLabelText("Début"), { target: { value: "2026-01-05T09:00" } });
+    // Simulate clearing the field (value becomes "")
+    fireEvent.change(screen.getByLabelText("Début"), { target: { value: "" } });
+    // Set end and title, then submit
+    fireEvent.change(screen.getByLabelText("Fin"), { target: { value: "2026-01-05T10:00" } });
+    fireEvent.change(screen.getByLabelText("Titre"), { target: { value: "X" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enregistrer" }));
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    const draft = onSubmit.mock.calls[0]![0] as import("@retrorganizer/core").EventDraft;
+    expect(Number.isFinite(draft.start)).toBe(true);
+  });
+
   it("toggles a contact link", () => {
     const onSubmit = vi.fn();
     render(<EventForm onSubmit={onSubmit} onCancel={() => {}} />);

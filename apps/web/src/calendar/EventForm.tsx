@@ -26,7 +26,7 @@ export interface EventFormProps {
 }
 
 export function EventForm({ initial, onSubmit, onCancel }: EventFormProps) {
-  const [draft, setDraft] = useState<EventDraft>(initial ?? emptyEventDraft());
+  const [draft, setDraft] = useState<EventDraft>(initial ? { ...initial, reminderOffsets: initial.reminderOffsets.slice(0, 1) } : emptyEventDraft());
   const [error, setError] = useState<string | null>(null);
   const { contacts } = useContacts();
 
@@ -61,22 +61,22 @@ export function EventForm({ initial, onSubmit, onCancel }: EventFormProps) {
         <>
           <label>Début
             <input aria-label="Début" type="date" value={draft.start ? toDateInput(draft.start) : ""}
-              onChange={(e) => set("start", fromDateInput(e.target.value))} style={{ display: "block" }} />
+              onChange={(e) => { if (e.target.value) set("start", fromDateInput(e.target.value)); }} style={{ display: "block" }} />
           </label>
           <label>Fin
             <input aria-label="Fin" type="date" value={draft.end ? toDateInput(draft.end) : ""}
-              onChange={(e) => set("end", fromDateInput(e.target.value))} style={{ display: "block" }} />
+              onChange={(e) => { if (e.target.value) set("end", fromDateInput(e.target.value)); }} style={{ display: "block" }} />
           </label>
         </>
       ) : (
         <>
           <label>Début
             <input aria-label="Début" type="datetime-local" value={draft.start ? toLocalInput(draft.start) : ""}
-              onChange={(e) => set("start", fromLocalInput(e.target.value))} style={{ display: "block" }} />
+              onChange={(e) => { if (e.target.value) set("start", fromLocalInput(e.target.value)); }} style={{ display: "block" }} />
           </label>
           <label>Fin
             <input aria-label="Fin" type="datetime-local" value={draft.end ? toLocalInput(draft.end) : ""}
-              onChange={(e) => set("end", fromLocalInput(e.target.value))} style={{ display: "block" }} />
+              onChange={(e) => { if (e.target.value) set("end", fromLocalInput(e.target.value)); }} style={{ display: "block" }} />
           </label>
         </>
       )}
@@ -89,14 +89,14 @@ export function EventForm({ initial, onSubmit, onCancel }: EventFormProps) {
       <label>Récurrence
         <select aria-label="Récurrence" value={draft.recurrence ?? ""}
           onChange={(e) => set("recurrence", e.target.value === "" ? null : e.target.value)} style={{ display: "block" }}>
-          {EVENT_RECUR_PRESETS.map((p) => <option key={p.label} value={p.value}>{p.label}</option>)}
+          {EVENT_RECUR_PRESETS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
         </select>
       </label>
 
       <label>Rappel
         <select aria-label="Rappel" value={reminderValue}
           onChange={(e) => set("reminderOffsets", Number(e.target.value) < 0 ? [] : [Number(e.target.value)])} style={{ display: "block" }}>
-          {EVENT_REMINDER_PRESETS.map((p) => <option key={p.label} value={p.value}>{p.label}</option>)}
+          {EVENT_REMINDER_PRESETS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
         </select>
       </label>
 
