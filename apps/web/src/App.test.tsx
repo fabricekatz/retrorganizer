@@ -12,6 +12,10 @@ vi.mock("./calendar/CalendarModule", () => ({
   CalendarModule: () => <div data-testid="calendar-module" />,
 }));
 
+vi.mock("./search/GlobalSearchBar", () => ({
+  GlobalSearchBar: () => <div data-testid="global-search" />,
+}));
+
 describe("App", () => {
   it("renders the 8 section tabs for an authenticated user", () => {
     render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={["/diary"]}><App /></MemoryRouter>);

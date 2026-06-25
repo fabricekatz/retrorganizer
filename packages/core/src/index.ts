@@ -18,3 +18,4 @@ export * from "./repositories/noteSections";
 export * from "./io/vcard";
 export * from "./io/csv";
 export * from "./io/ics";
+export * from "./search/globalSearch";
