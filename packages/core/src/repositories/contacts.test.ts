@@ -1,15 +1,10 @@
-import { describe, it, expect, beforeAll, beforeEach } from "vitest";
+import { describe, it, expect, beforeAll, afterEach } from "vitest";
 import { signInAnonymously } from "firebase/auth";
 import { initFirebase } from "../firebase/app";
 import { contactsRepo } from "./contacts";
 import { getFirebase } from "../firebase/app";
 
 const PROJECT_ID = "retrorganizer-dev";
-
-async function clearFirestoreData() {
-  const url = `http://127.0.0.1:8080/emulator/v1/projects/${PROJECT_ID}/databases/(default)/documents`;
-  await fetch(url, { method: "DELETE" });
-}
 
 let ownerId: string;
 
@@ -23,8 +18,10 @@ beforeAll(async () => {
   ownerId = cred.user.uid;
 });
 
-beforeEach(async () => {
-  await clearFirestoreData();
+afterEach(async () => {
+  const active = await contactsRepo.listByOwner(ownerId);
+  const deleted = await contactsRepo.listDeletedByOwner(ownerId);
+  await Promise.all([...active, ...deleted].map((c) => contactsRepo.hardDelete(c.id)));
 });
 
 describe("contactsRepo", () => {
