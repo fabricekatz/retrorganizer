@@ -37,6 +37,7 @@ export interface EventDraft {
   allDay: boolean;
   location: string;
   notes: string;
+  /** Bare RRULE value, e.g. "FREQ=WEEKLY;BYDAY=MO" — NOT prefixed with "RRULE:" and not a whole VEVENT. null = no recurrence. */
   recurrence: string | null;
   recurrenceExceptions: number[];
   reminderOffsets: number[];

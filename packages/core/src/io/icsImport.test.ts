@@ -35,6 +35,7 @@ describe("icsToEventDrafts", () => {
     expect(d.allDay).toBe(true);
     expect(d.start).toBe(Date.UTC(2026, 0, 5));
     expect(d.title).toBe("Congé");
+    expect(d.end).toBe(Date.UTC(2026, 0, 6) - 1);
   });
 
   it("skips a VEVENT without DTSTART", () => {
