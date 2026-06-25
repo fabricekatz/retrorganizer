@@ -5,3 +5,4 @@ export * from "./firebase/app";
 export * from "./repositories/base";
 export * from "./repositories/contacts";
 export * from "./io/vcard";
+export * from "./io/csv";
