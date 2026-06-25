@@ -6,6 +6,9 @@ import type { EventDraft } from "@retrorganizer/core";
 vi.mock("../contacts/useContacts", () => ({
   useContacts: () => ({ contacts: [{ id: "c1", displayName: "Ada Lovelace" }], loading: false }),
 }));
+vi.mock("../categories/useCategories", () => ({
+  useCategories: () => ({ categories: [], loading: false, error: null, createCategory: vi.fn(), updateCategory: vi.fn(), removeCategory: vi.fn(), reload: vi.fn() }),
+}));
 
 describe("EventForm", () => {
   it("submits a draft with title, times and a weekly recurrence", () => {
@@ -15,6 +18,8 @@ describe("EventForm", () => {
     fireEvent.change(screen.getByLabelText("Début"), { target: { value: "2026-01-05T09:00" } });
     fireEvent.change(screen.getByLabelText("Fin"), { target: { value: "2026-01-05T10:00" } });
     fireEvent.change(screen.getByLabelText("Récurrence"), { target: { value: "FREQ=WEEKLY" } });
+    fireEvent.change(screen.getByLabelText("Ajouter un tag"), { target: { value: "réu" } });
+    fireEvent.keyDown(screen.getByLabelText("Ajouter un tag"), { key: "Enter" });
     fireEvent.click(screen.getByRole("button", { name: "Enregistrer" }));
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
@@ -23,6 +28,7 @@ describe("EventForm", () => {
     expect(d.recurrence).toBe("FREQ=WEEKLY");
     expect(d.start).toBe(new Date("2026-01-05T09:00").getTime());
     expect(d.end).toBe(new Date("2026-01-05T10:00").getTime());
+    expect(d.tags).toEqual(["réu"]);
   });
 
   it("blocks submit and shows an error when end is before start", () => {

@@ -3,6 +3,8 @@ import { tokens } from "@retrorganizer/ui";
 import { emptyEventDraft, type EventDraft } from "@retrorganizer/core";
 import { useContacts } from "../contacts/useContacts";
 import { toLocalInput, fromLocalInput, toDateInput, fromDateInput } from "./datetime";
+import { CategorySelect } from "../categories/CategorySelect";
+import { TagInput } from "../categories/TagInput";
 
 export const EVENT_RECUR_PRESETS: { label: string; value: string }[] = [
   { label: "Aucune", value: "" },
@@ -122,6 +124,12 @@ export function EventForm({ initial, onSubmit, onCancel }: EventFormProps) {
       )}
 
       {error && <p role="alert" style={{ color: "#a8431f" }}>{error}</p>}
+      <label>Catégorie
+        <CategorySelect value={draft.categoryId} onChange={(id) => set("categoryId", id)} />
+      </label>
+      <label>Tags
+        <TagInput value={draft.tags} onChange={(tags) => set("tags", tags)} />
+      </label>
       <div style={{ display: "flex", gap: tokens.space.sm }}>
         <button type="submit">Enregistrer</button>
         <button type="button" onClick={onCancel}>Annuler</button>

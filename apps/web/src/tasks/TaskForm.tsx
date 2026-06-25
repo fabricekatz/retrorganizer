@@ -5,6 +5,8 @@ import { useContacts } from "../contacts/useContacts";
 import { useEvents } from "../calendar/useEvents";
 import { toDateInput, fromDateInput } from "../calendar/datetime";
 import { SubtaskField } from "./SubtaskField";
+import { CategorySelect } from "../categories/CategorySelect";
+import { TagInput } from "../categories/TagInput";
 
 const PRIORITIES: { label: string; value: TaskDraft["priority"] }[] = [
   { label: "Basse", value: "low" }, { label: "Normale", value: "normal" }, { label: "Haute", value: "high" },
@@ -86,6 +88,12 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
           ))}
         </fieldset>
       )}
+      <label>Catégorie
+        <CategorySelect value={draft.categoryId} onChange={(id) => set("categoryId", id)} />
+      </label>
+      <label>Tags
+        <TagInput value={draft.tags} onChange={(tags) => set("tags", tags)} />
+      </label>
       <div style={{ display: "flex", gap: tokens.space.sm }}>
         <button type="submit">Enregistrer</button>
         <button type="button" onClick={onCancel}>Annuler</button>

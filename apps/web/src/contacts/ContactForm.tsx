@@ -3,6 +3,8 @@ import { tokens } from "@retrorganizer/ui";
 import { emptyDraft, withDisplayName, type ContactDraft } from "@retrorganizer/core";
 import { MultiValueField } from "./MultiValueField";
 import { AddressField } from "./AddressField";
+import { CategorySelect } from "../categories/CategorySelect";
+import { TagInput } from "../categories/TagInput";
 
 export interface ContactFormProps {
   initial?: ContactDraft;
@@ -55,6 +57,12 @@ export function ContactForm({ initial, onSubmit, onCancel }: ContactFormProps) {
         Notes
         <textarea aria-label="Notes" value={draft.notes}
           onChange={(e) => set("notes", e.target.value)} style={{ display: "block", width: "100%" }} />
+      </label>
+      <label>Catégorie
+        <CategorySelect value={draft.categoryId} onChange={(id) => set("categoryId", id)} />
+      </label>
+      <label>Tags
+        <TagInput value={draft.tags} onChange={(tags) => set("tags", tags)} />
       </label>
       <div style={{ display: "flex", gap: tokens.space.sm }}>
         <button type="submit">Enregistrer</button>
