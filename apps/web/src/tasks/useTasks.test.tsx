@@ -5,12 +5,13 @@ import { useTasks } from "./useTasks";
 const listByOwner = vi.fn();
 const create = vi.fn();
 const update = vi.fn();
+const softDelete = vi.fn();
 vi.mock("@retrorganizer/core", () => ({
   tasksRepo: {
     listByOwner: (...a: unknown[]) => listByOwner(...a),
     create: (...a: unknown[]) => create(...a),
     update: (...a: unknown[]) => update(...a),
-    softDelete: vi.fn(),
+    softDelete: (...a: unknown[]) => softDelete(...a),
   },
 }));
 let mockUser: { uid: string; email: string } | null = { uid: "u1", email: "a@x.io" };
@@ -23,6 +24,7 @@ beforeEach(() => {
   ]);
   create.mockReset().mockResolvedValue(undefined);
   update.mockReset().mockResolvedValue(undefined);
+  softDelete.mockReset().mockResolvedValue(undefined);
 });
 
 describe("useTasks", () => {
@@ -47,5 +49,13 @@ describe("useTasks", () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.tasks).toEqual([]);
     expect(listByOwner).not.toHaveBeenCalled();
+  });
+
+  it("remove soft-deletes then reloads", async () => {
+    const { result } = renderHook(() => useTasks());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    await act(async () => { await result.current.remove("t1"); });
+    expect(softDelete).toHaveBeenCalledWith("t1");
+    expect(listByOwner).toHaveBeenCalledTimes(2);
   });
 });
