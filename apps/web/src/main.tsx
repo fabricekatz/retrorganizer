@@ -1,11 +1,18 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { bootstrapFirebase } from "./firebaseConfig";
+import { AuthProvider } from "./auth/AuthProvider";
+import { App } from "./App";
 
-const root = document.getElementById("root");
-if (root) {
-  ReactDOM.createRoot(root).render(
-    <React.StrictMode>
-      <div>Retrorganizer</div>
-    </React.StrictMode>
-  );
-}
+bootstrapFirebase();
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
+  </StrictMode>,
+);
