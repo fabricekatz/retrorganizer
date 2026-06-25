@@ -7,7 +7,7 @@ export interface AgendaViewProps {
 }
 
 function dayLabel(ms: number): string {
-  return new Date(ms).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  return new Date(ms).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 
 function timeLabel(ms: number): string {
