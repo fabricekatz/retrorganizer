@@ -3,7 +3,7 @@ import { tokens } from "@retrorganizer/ui";
 import {
   expandEvents, monthMatrix, weekDays, startOfDay, addDays,
   draftFromEvent, emptyEventDraft, eventsToICS, icsToEventDrafts,
-  type Event, type EventDraft, type Occurrence,
+  type EventDraft, type Occurrence,
 } from "@retrorganizer/core";
 import { useEvents } from "./useEvents";
 import { MonthView } from "./MonthView";
@@ -108,7 +108,7 @@ export function CalendarModule({ initialAnchor }: CalendarModuleProps) {
         {btn("month", "Mois")}{btn("week", "Semaine")}{btn("day", "Jour")}{btn("agenda", "Agenda")}
         <span style={{ width: tokens.space.md }} />
         <button type="button" onClick={() => setAnchor(shift(view, anchor, -1))}>‹</button>
-        <button type="button" onClick={() => setAnchor(initialAnchor ?? startOfDay(Date.now()))}>Aujourd'hui</button>
+        <button type="button" onClick={() => setAnchor(startOfDay(Date.now()))}>Aujourd'hui</button>
         <button type="button" onClick={() => setAnchor(shift(view, anchor, 1))}>›</button>
         <span style={{ flex: 1 }} />
         <button type="button" onClick={() => newOnDay(startOfDay(anchor))}>+ Nouvel événement</button>
