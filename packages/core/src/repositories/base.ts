@@ -1,5 +1,5 @@
 import {
-  collection, doc, getDoc, getDocs, setDoc, updateDoc, query, where,
+  collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where,
 } from "firebase/firestore";
 import { getFirebase } from "../firebase/app";
 import type { BaseEntity } from "../domain/types";
@@ -10,6 +10,9 @@ export interface Repository<T extends BaseEntity> {
   update(id: string, patch: Partial<T>): Promise<void>;
   softDelete(id: string): Promise<void>;
   listByOwner(ownerId: string): Promise<T[]>;
+  restore(id: string): Promise<void>;
+  hardDelete(id: string): Promise<void>;
+  listDeletedByOwner(ownerId: string): Promise<T[]>;
 }
 
 export function createRepository<T extends BaseEntity>(
@@ -43,6 +46,17 @@ export function createRepository<T extends BaseEntity>(
       const q = query(col(), where("ownerId", "==", ownerId), where("deletedAt", "==", null));
       const snap = await getDocs(q);
       return snap.docs.map((d) => parse(d.data()));
+    },
+    async restore(id) {
+      await updateDoc(ref(id), { deletedAt: null, updatedAt: Date.now() });
+    },
+    async hardDelete(id) {
+      await deleteDoc(ref(id));
+    },
+    async listDeletedByOwner(ownerId) {
+      const q = query(col(), where("ownerId", "==", ownerId));
+      const snap = await getDocs(q);
+      return snap.docs.map((d) => parse(d.data())).filter((e) => e.deletedAt !== null);
     },
   };
 }

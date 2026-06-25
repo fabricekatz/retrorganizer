@@ -8,7 +8,8 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == request.resource.data.ownerId;
     }
     match /{collection}/{docId} {
-      allow read, delete: if isOwner();
+      allow read: if resource == null ? request.auth != null : isOwner();
+      allow delete: if isOwner();
       allow update: if isOwner() && isCreatingOwn();
       allow create: if isCreatingOwn();
     }
