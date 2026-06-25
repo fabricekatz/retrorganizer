@@ -40,9 +40,9 @@ export function createRepository<T extends BaseEntity>(
       await updateDoc(ref(id), { deletedAt: Date.now() });
     },
     async listByOwner(ownerId) {
-      const q = query(col(), where("ownerId", "==", ownerId));
+      const q = query(col(), where("ownerId", "==", ownerId), where("deletedAt", "==", null));
       const snap = await getDocs(q);
-      return snap.docs.map((d) => parse(d.data())).filter((e) => e.deletedAt === null);
+      return snap.docs.map((d) => parse(d.data()));
     },
   };
 }
