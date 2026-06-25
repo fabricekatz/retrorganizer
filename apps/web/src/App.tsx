@@ -9,6 +9,7 @@ import { ContactsModule } from "./contacts/ContactsModule";
 import { CalendarModule } from "./calendar/CalendarModule";
 import { TasksModule } from "./tasks/TasksModule";
 import { NotesModule } from "./notes/NotesModule";
+import { GlobalSearchBar } from "./search/GlobalSearchBar";
 
 export function App() {
   const { user, loading, signOut } = useAuth();
@@ -24,6 +25,7 @@ export function App() {
         padding: `${tokens.space.xs}px ${tokens.space.md}px`, borderBottom: `1px solid ${tokens.color.line}`,
         font: `13px ${tokens.font.body}` }}>
         <strong style={{ color: tokens.color.ink }}>Retrorganizer</strong>
+        <GlobalSearchBar />
         <button onClick={() => signOut()}>Déconnexion</button>
       </header>
 
