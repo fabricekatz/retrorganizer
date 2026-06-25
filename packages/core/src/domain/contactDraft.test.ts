@@ -23,6 +23,8 @@ describe("contactDraft", () => {
     expect(d.organization).toBe("");
     expect(d.notes).toBe("");
     expect(d.phones).toEqual([{ label: "mobile", value: "+33 1" }]);
+    d.phones[0]!.value = "mutated";
+    expect(sample.phones[0]!.value).toBe("+33 1");
   });
 
   it("withDisplayName fills from first+last when empty", () => {

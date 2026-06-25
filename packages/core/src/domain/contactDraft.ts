@@ -46,6 +46,6 @@ export function draftFromContact(c: Contact): ContactDraft {
 }
 
 export function withDisplayName(d: ContactDraft): ContactDraft {
-  if (d.displayName.trim() !== "") return d;
+  if (d.displayName.trim() !== "") return { ...d };
   return { ...d, displayName: `${d.firstName} ${d.lastName}`.trim() };
 }
