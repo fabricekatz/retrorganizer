@@ -37,15 +37,20 @@ describe("event drafts", () => {
     expect(d.allDay).toBe(false);
     expect(d.recurrence).toBeNull();
     expect(d.contactIds).toEqual([]);
+    expect(d.start).toBe(0);
+    expect(d.end).toBe(0);
+    expect(d.categoryId).toBeNull();
   });
 
   it("draftFromEvent deep-copies arrays", () => {
     const e = parseEvent({
       id: "e1", ownerId: "u1", createdAt: 1, updatedAt: 1, deletedAt: null,
-      title: "X", start: 1000, end: 2000, contactIds: ["c1"],
+      title: "X", start: 1000, end: 2000, contactIds: ["c1"], tags: ["t1"],
     });
     const d = draftFromEvent(e);
     d.contactIds.push("c2");
+    d.tags.push("t2");
     expect(e.contactIds).toEqual(["c1"]);
+    expect(e.tags).toEqual(["t1"]);
   });
 });

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import type { BaseEntity } from "./types";
 
 export const eventSchema = z
   .object({
@@ -25,10 +24,10 @@ export const eventSchema = z
   })
   .refine((e) => e.end >= e.start, { message: "end must be >= start", path: ["end"] });
 
-export type Event = z.infer<typeof eventSchema> & BaseEntity;
+export type Event = z.infer<typeof eventSchema>;
 
 export function parseEvent(input: unknown): Event {
-  return eventSchema.parse(input) as Event;
+  return eventSchema.parse(input);
 }
 
 export interface EventDraft {
