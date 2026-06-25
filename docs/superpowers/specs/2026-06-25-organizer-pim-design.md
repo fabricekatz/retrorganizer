@@ -89,7 +89,7 @@ Collections **top-level**, isolées par `ownerId` + Security Rules
 **`contacts`**
 - `firstName`, `lastName`, `displayName`, `organization`, `title`
 - `phones[]` (`{label, value}`), `emails[]`, `addresses[]` (`{label, street, city, postalCode, country}`)
-- `webLinks[]` (`{label, url}`), `importantDates[]` (`{label, date}` → source des anniversaires V2)
+- `webLinks[]` (`{label, value}`), `importantDates[]` (`{label, date}` → source des anniversaires V2)
 - `notes` (texte libre), `customFields[]` (`{key, value}`), `categoryId`, `tags[]`
 
 **`events`**
