@@ -13,10 +13,11 @@ export function useReminders(): UseReminders {
   const { events } = useEvents();
   const eventsRef = useRef(events);
   eventsRef.current = events;
-  const lastCheck = useRef<number>(Date.now());
+  const lastCheck = useRef<number>(0);
   const [due, setDue] = useState<ReminderHit[]>([]);
 
   useEffect(() => {
+    lastCheck.current = Date.now();
     if (typeof Notification !== "undefined" && Notification.permission === "default") {
       void Notification.requestPermission();
     }
