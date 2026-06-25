@@ -19,14 +19,14 @@ beforeEach(() => { navigate.mockReset(); setQuery.mockReset(); mockResults = [];
 
 describe("GlobalSearchBar", () => {
   it("typing calls setQuery", () => {
-    render(<MemoryRouter><GlobalSearchBar /></MemoryRouter>);
+    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><GlobalSearchBar /></MemoryRouter>);
     fireEvent.change(screen.getByLabelText("Recherche globale"), { target: { value: "ada" } });
     expect(setQuery).toHaveBeenCalledWith("ada");
   });
 
   it("shows results and navigates on click", () => {
     mockResults = [{ id: "contact:c1", type: "contact", entityId: "c1", title: "Ada Lovelace", path: "/address" }];
-    render(<MemoryRouter><GlobalSearchBar /></MemoryRouter>);
+    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><GlobalSearchBar /></MemoryRouter>);
     fireEvent.click(screen.getByRole("button", { name: /Ada Lovelace/ }));
     expect(navigate).toHaveBeenCalledWith("/address");
     expect(setQuery).toHaveBeenCalledWith("");
