@@ -1,5 +1,4 @@
 import { z } from "zod";
-import type { BaseEntity, LabeledValue, PostalAddress, LabeledDate, KeyValue } from "./types";
 
 const labeledValue = z.object({ label: z.string(), value: z.string() });
 const postalAddress = z.object({
@@ -34,9 +33,8 @@ export const contactSchema = z.object({
   tags: z.array(z.string()).default([]),
 });
 
-export type Contact = z.infer<typeof contactSchema> & BaseEntity;
-export type { LabeledValue, PostalAddress, LabeledDate, KeyValue };
+export type Contact = z.infer<typeof contactSchema>;
 
 export function parseContact(input: unknown): Contact {
-  return contactSchema.parse(input) as Contact;
+  return contactSchema.parse(input);
 }
