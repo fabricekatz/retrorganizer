@@ -10,3 +10,4 @@ export * from "./repositories/contacts";
 export * from "./repositories/events";
 export * from "./io/vcard";
 export * from "./io/csv";
+export * from "./io/ics";
