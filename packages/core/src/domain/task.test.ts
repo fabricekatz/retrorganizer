@@ -42,12 +42,14 @@ describe("task drafts", () => {
   it("draftFromTask deep-copies arrays", () => {
     const t = parseTask({
       id: "t1", ownerId: "u1", createdAt: 1, updatedAt: 1, deletedAt: null, title: "X",
-      subtasks: [{ title: "a", done: false }], contactIds: ["c1"],
+      subtasks: [{ title: "a", done: false }], contactIds: ["c1"], tags: ["t1"],
     });
     const d = draftFromTask(t);
     d.subtasks.push({ title: "b", done: true });
     d.contactIds.push("c2");
+    d.tags.push("t2");
     expect(t.subtasks).toEqual([{ title: "a", done: false }]);
     expect(t.contactIds).toEqual(["c1"]);
+    expect(t.tags).toEqual(["t1"]);
   });
 });

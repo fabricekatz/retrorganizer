@@ -1,5 +1,4 @@
 import { z } from "zod";
-import type { BaseEntity } from "./types";
 
 export const subtaskSchema = z.object({ title: z.string(), done: z.boolean() });
 export type Subtask = z.infer<typeof subtaskSchema>;
