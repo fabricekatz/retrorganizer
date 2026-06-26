@@ -37,6 +37,22 @@ describe("CategoryManager", () => {
     vi.unstubAllGlobals();
   });
 
+  it("does not rename when prompt is cancelled", () => {
+    vi.stubGlobal("prompt", vi.fn(() => null));
+    render(<CategoryManager onClose={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "Renommer" }));
+    expect(updateCategory).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+
+  it("does not rename when the name is unchanged", () => {
+    vi.stubGlobal("prompt", vi.fn(() => "Travail"));
+    render(<CategoryManager onClose={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "Renommer" }));
+    expect(updateCategory).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+
   it("deletes after confirmation", () => {
     vi.stubGlobal("confirm", vi.fn(() => true));
     render(<CategoryManager onClose={() => {}} />);
