@@ -10,6 +10,7 @@ import { GlobalSearchBar } from "./search/GlobalSearchBar";
 import { TrashPanel } from "./trash/TrashPanel";
 import { CategoryManager } from "./categories/CategoryManager";
 import { ReminderHost } from "./reminders/ReminderHost";
+import { ChunkErrorBoundary } from "./ChunkErrorBoundary";
 
 const ContactsModule = lazy(() => import("./contacts/ContactsModule").then((m) => ({ default: m.ContactsModule })));
 const CalendarModule = lazy(() => import("./calendar/CalendarModule").then((m) => ({ default: m.CalendarModule })));
@@ -52,28 +53,30 @@ export function App() {
 
         <main style={{ flex: 1, overflow: "auto", background: tokens.color.surface,
           margin: tokens.space.md, border: `1px solid ${tokens.color.line}`, borderRadius: tokens.radius.md }}>
-          <Suspense fallback={<div style={{ padding: tokens.space.lg }}>Chargement…</div>}>
-            <Routes>
-              <Route path="/" element={<Navigate to="/diary" replace />} />
-              {SECTIONS.map((s) => (
-                <Route key={s.id} path={s.path}
-                  element={
-                    s.id === "diary"
-                      ? <CalendarModule />
-                      : s.id === "todo"
-                        ? <TasksModule />
-                        : s.id === "address"
-                          ? <ContactsModule />
-                          : s.id === "notepad"
-                            ? <NotesModule />
-                            : s.mvp
-                              ? <SectionPlaceholder label={s.label} />
-                              : <ComingSoon label={s.label} />
-                  } />
-              ))}
-              <Route path="*" element={<Navigate to="/diary" replace />} />
-            </Routes>
-          </Suspense>
+          <ChunkErrorBoundary>
+            <Suspense fallback={<div style={{ padding: tokens.space.lg }}>Chargement…</div>}>
+              <Routes>
+                <Route path="/" element={<Navigate to="/diary" replace />} />
+                {SECTIONS.map((s) => (
+                  <Route key={s.id} path={s.path}
+                    element={
+                      s.id === "diary"
+                        ? <CalendarModule />
+                        : s.id === "todo"
+                          ? <TasksModule />
+                          : s.id === "address"
+                            ? <ContactsModule />
+                            : s.id === "notepad"
+                              ? <NotesModule />
+                              : s.mvp
+                                ? <SectionPlaceholder label={s.label} />
+                                : <ComingSoon label={s.label} />
+                    } />
+                ))}
+                <Route path="*" element={<Navigate to="/diary" replace />} />
+              </Routes>
+            </Suspense>
+          </ChunkErrorBoundary>
         </main>
       </div>
     </div>
