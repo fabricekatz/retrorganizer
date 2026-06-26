@@ -3,6 +3,7 @@ import { tokens, moduleAccent } from "@retrorganizer/ui";
 import { emptyNoteDraft, draftFromNote, type Note, type NoteDraft } from "@retrorganizer/core";
 import { useNotes } from "./useNotes";
 import { NoteEditor } from "./NoteEditor";
+import { useFocusParam } from "../search/useFocusParam";
 
 export function NotesModule() {
   const { sections, notes, loading, error, createSection, createNote, updateNote, removeNote } = useNotes();
@@ -16,6 +17,12 @@ export function NotesModule() {
   }, [sections, selectedSectionId]);
 
   const sectionNotes = notes.filter((n) => n.sectionId === selectedSectionId);
+
+  useFocusParam(notes, loading, (n) => {
+    setSelectedSectionId(n.sectionId);
+    setSelectedNoteId(n.id);
+    setDraft(draftFromNote(n));
+  });
 
   function openNote(n: Note) {
     setSelectedNoteId(n.id);
