@@ -5,7 +5,7 @@ import type { Occurrence, Event, Category } from "@retrorganizer/core";
 
 function occ(year: number, month: number, day: number, hour: number, title: string): Occurrence {
   const start = new Date(year, month, day, hour).getTime();
-  return { event: { id: title, title, start, end: start + 3600000 } as Event, start, end: start + 3600000 };
+  return { event: { id: title, title, start, end: start + 3600000, categoryId: null, tags: [] as string[] } as unknown as Event, start, end: start + 3600000 };
 }
 
 const categories: Category[] = [

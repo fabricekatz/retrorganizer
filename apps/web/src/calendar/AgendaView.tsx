@@ -39,7 +39,7 @@ export function AgendaView({ occurrences, categories, onSelectOccurrence }: Agen
               <span style={{ color: tokens.color.muted, minWidth: 48 }}>{o.event.allDay ? "Jour" : timeLabel(o.start)}</span>
               <span style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <span>{o.event.title}</span>
-                <CategoryTagBadges category={categoryById(categories, o.event.categoryId)} tags={o.event.tags ?? []} />
+                <CategoryTagBadges category={categoryById(categories, o.event.categoryId)} tags={o.event.tags} />
               </span>
             </button>
           </div>
