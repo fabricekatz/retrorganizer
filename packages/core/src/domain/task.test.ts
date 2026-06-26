@@ -29,6 +29,19 @@ describe("parseTask", () => {
   });
 });
 
+describe("task reminderOffsets", () => {
+  it("defaults reminderOffsets to [] when parsing", () => {
+    const t = parseTask({ id: "t1", ownerId: "u1", createdAt: 1, updatedAt: 1, deletedAt: null, title: "X" });
+    expect(t.reminderOffsets).toEqual([]);
+  });
+
+  it("emptyTaskDraft and draftFromTask carry reminderOffsets", () => {
+    expect(emptyTaskDraft().reminderOffsets).toEqual([]);
+    const t = parseTask({ id: "t2", ownerId: "u1", createdAt: 1, updatedAt: 1, deletedAt: null, title: "Y", reminderOffsets: [1440] });
+    expect(draftFromTask(t).reminderOffsets).toEqual([1440]);
+  });
+});
+
 describe("task drafts", () => {
   it("emptyTaskDraft has neutral defaults", () => {
     const d = emptyTaskDraft();

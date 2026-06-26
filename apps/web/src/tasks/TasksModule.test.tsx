@@ -25,7 +25,7 @@ vi.mock("../calendar/useEvents", () => ({ useEvents: () => ({ events: [], loadin
 const task = (extra: Record<string, unknown> = {}) => ({
   id: "t1", ownerId: "u1", createdAt: 1, updatedAt: 1, deletedAt: null, title: "Acheter pain",
   description: "", priority: "normal", dueDate: null, status: "todo", completedAt: null,
-  subtasks: [], recurrence: null, contactIds: [], eventId: null, categoryId: null, tags: [], ...extra,
+  subtasks: [], recurrence: null, contactIds: [], eventId: null, categoryId: null, tags: [], reminderOffsets: [], ...extra,
 });
 
 beforeEach(() => {
