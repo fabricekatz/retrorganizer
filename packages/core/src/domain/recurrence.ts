@@ -11,13 +11,27 @@ function pad(n: number): string {
   return String(n).padStart(2, "0");
 }
 
-// UTC instant -> iCal UTC datetime (yyyymmddThhmmssZ) for DTSTART
-function toICalUtc(ms: number): string {
+// Floating iCal datetime (no "Z") built from the LOCAL wall-clock of an instant.
+function toICalFloating(ms: number): string {
   const d = new Date(ms);
   return (
-    `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}` +
-    `T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`
+    `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}` +
+    `T${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
   );
+}
+
+// A Date whose UTC components equal the LOCAL components of `ms` — for passing floating bounds to rrule.
+function toFloatingDate(ms: number): Date {
+  const d = new Date(ms);
+  return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()));
+}
+
+// Inverse: interpret a floating Date's UTC components as LOCAL wall-clock → the real instant in ms.
+function fromFloatingDate(d: Date): number {
+  return new Date(
+    d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(),
+    d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds(),
+  ).getTime();
 }
 
 export function expandEvent(e: Event, rangeStart: number, rangeEnd: number): Occurrence[] {
@@ -28,11 +42,11 @@ export function expandEvent(e: Event, rangeStart: number, rangeEnd: number): Occ
     }
     return [];
   }
-  const rule = rrulestr(`DTSTART:${toICalUtc(e.start)}\nRRULE:${e.recurrence}`);
+  const rule = rrulestr(`DTSTART:${toICalFloating(e.start)}\nRRULE:${e.recurrence}`);
   const exceptions = new Set(e.recurrenceExceptions);
   return rule
-    .between(new Date(rangeStart), new Date(rangeEnd), true)
-    .map((d) => d.getTime())
+    .between(toFloatingDate(rangeStart), toFloatingDate(rangeEnd), true)
+    .map((d) => fromFloatingDate(d))
     .filter((ms) => !exceptions.has(ms))
     .map((ms) => ({ event: e, start: ms, end: ms + duration }));
 }
@@ -44,7 +58,7 @@ export function expandEvents(events: Event[], rangeStart: number, rangeEnd: numb
 }
 
 export function nextOccurrenceAfter(recurrence: string, afterMs: number): number | null {
-  const rule = rrulestr(`DTSTART:${toICalUtc(afterMs)}\nRRULE:${recurrence}`);
-  const next = rule.after(new Date(afterMs), false);
-  return next ? next.getTime() : null;
+  const rule = rrulestr(`DTSTART:${toICalFloating(afterMs)}\nRRULE:${recurrence}`);
+  const next = rule.after(toFloatingDate(afterMs), false);
+  return next ? fromFloatingDate(next) : null;
 }
