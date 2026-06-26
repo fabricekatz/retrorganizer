@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import { signInAnonymously } from "firebase/auth";
 import { initFirebase, getFirebase } from "../firebase/app";
 import { contactsRepo } from "./contacts";
@@ -6,6 +6,7 @@ import { tasksRepo } from "./tasks";
 import { eventsRepo } from "./events";
 import { categoriesRepo } from "./categories";
 import { clearCategoryReferences } from "./categoryCleanup";
+import { clearFirestoreEmulator } from "../firebase/emulatorTestSupport";
 
 const PROJECT_ID = "retrorganizer-dev";
 let ownerId: string;
@@ -17,13 +18,8 @@ beforeAll(async () => {
   ownerId = cred.user.uid;
 });
 
-afterEach(async () => {
-  for (const repo of [contactsRepo, tasksRepo, eventsRepo, categoriesRepo]) {
-    const active = await repo.listByOwner(ownerId);
-    const deleted = await repo.listDeletedByOwner(ownerId);
-    await Promise.all([...active, ...deleted].map((e) => repo.hardDelete(e.id)));
-  }
-});
+// Hermetic isolation: wipe the emulator before each test (clean slate).
+beforeEach(() => clearFirestoreEmulator(PROJECT_ID));
 
 describe("clearCategoryReferences", () => {
   it("nulls categoryId on referencing contacts, tasks, and events; leaves others", async () => {

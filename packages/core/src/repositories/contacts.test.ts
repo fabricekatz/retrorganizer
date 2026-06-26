@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeAll, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import { signInAnonymously } from "firebase/auth";
 import { initFirebase } from "../firebase/app";
 import { contactsRepo } from "./contacts";
 import { getFirebase } from "../firebase/app";
+import { clearFirestoreEmulator } from "../firebase/emulatorTestSupport";
 
 const PROJECT_ID = "retrorganizer-dev";
 
@@ -18,11 +19,8 @@ beforeAll(async () => {
   ownerId = cred.user.uid;
 });
 
-afterEach(async () => {
-  const active = await contactsRepo.listByOwner(ownerId);
-  const deleted = await contactsRepo.listDeletedByOwner(ownerId);
-  await Promise.all([...active, ...deleted].map((c) => contactsRepo.hardDelete(c.id)));
-});
+// Hermetic isolation: wipe the emulator before each test (clean slate).
+beforeEach(() => clearFirestoreEmulator(PROJECT_ID));
 
 describe("contactsRepo", () => {
   it("creates and reads back a contact", async () => {
