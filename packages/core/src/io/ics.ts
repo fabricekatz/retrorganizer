@@ -17,6 +17,14 @@ export function icalUtc(ms: number): string {
   );
 }
 
+export function icalFloating(ms: number): string {
+  const d = new Date(ms);
+  return (
+    `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}` +
+    `T${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
+  );
+}
+
 export function icalDate(ms: number): string {
   const d = new Date(ms);
   return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}`;
@@ -32,15 +40,15 @@ export function eventToVEvent(e: Event): string {
     lines.push(`DTSTART;VALUE=DATE:${icalDate(e.start)}`);
     lines.push(`DTEND;VALUE=DATE:${icalDate(e.start + DAY)}`);
   } else {
-    lines.push(`DTSTART:${icalUtc(e.start)}`);
-    lines.push(`DTEND:${icalUtc(e.end)}`);
+    lines.push(`DTSTART:${icalFloating(e.start)}`);
+    lines.push(`DTEND:${icalFloating(e.end)}`);
   }
   lines.push(`SUMMARY:${escapeValue(e.title)}`);
   if (e.location) lines.push(`LOCATION:${escapeValue(e.location)}`);
   if (e.notes) lines.push(`DESCRIPTION:${escapeValue(e.notes)}`);
   if (e.recurrence) lines.push(`RRULE:${e.recurrence}`);
   if (e.recurrenceExceptions.length > 0) {
-    lines.push(`EXDATE:${e.recurrenceExceptions.map(icalUtc).join(",")}`);
+    lines.push(`EXDATE:${e.recurrenceExceptions.map(icalFloating).join(",")}`);
   }
   lines.push("END:VEVENT");
   return lines.join(CRLF) + CRLF;
