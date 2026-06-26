@@ -243,9 +243,12 @@ firebase deploy --only hosting,firestore:rules,firestore:indexes,functions
    re-fire the same reminders.
 
 **Coexistence with in-app reminders:** in-app reminder toasts continue to fire while
-the tab is open. The foreground FCM `onMessage` handler in `usePushNotifications.ts`
-is a no-op (`onMessage(messaging, () => {})`) so FCM messages received while the
-app is in the foreground are silently suppressed, avoiding double-notification.
+the tab is open. The in-app loop raises an OS `Notification` only when the tab is
+visible (foreground); when the tab is backgrounded or closed the loop skips the OS
+notification and FCM / the service worker delivers it instead — so the two paths
+never overlap. The foreground FCM `onMessage` handler in `usePushNotifications.ts`
+is a no-op (`onMessage(messaging, () => {})`) so any FCM message that does arrive
+while the app is foregrounded is silently suppressed as a further safety net.
 
 ### Verify end-to-end
 

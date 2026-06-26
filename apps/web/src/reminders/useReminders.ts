@@ -34,7 +34,8 @@ export function useReminders(): UseReminders {
       lastCheck.current = now;
       if (hits.length === 0) return;
       setDue((prev) => [...prev, ...hits]);
-      if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+      const visible = typeof document === "undefined" || document.visibilityState === "visible";
+      if (visible && typeof Notification !== "undefined" && Notification.permission === "granted") {
         for (const h of hits) {
           new Notification(h.title, { body: h.type === "task" ? "Rappel de tâche" : "Rappel d'événement" });
         }
