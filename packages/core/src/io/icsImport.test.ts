@@ -57,4 +57,29 @@ describe("icsToEventDrafts", () => {
     expect(d.recurrenceExceptions).toEqual([START + 7 * 24 * HOUR]);
     expect(d.location).toBe("Salle 1");
   });
+
+  it("parses a floating timed VEVENT as local wall-clock", () => {
+    const text = ["BEGIN:VEVENT", "UID:f1", "DTSTART:20260105T090000", "DTEND:20260105T100000", "SUMMARY:Floating", "END:VEVENT"].join("\r\n");
+    const d = icsToEventDrafts(text)[0]!;
+    expect(d.start).toBe(new Date(2026, 0, 5, 9, 0, 0).getTime()); // local 09:00, any runner TZ
+    expect(d.end).toBe(new Date(2026, 0, 5, 10, 0, 0).getTime());
+  });
+
+  it("parses a TZID-qualified DTSTART to the correct instant (winter, Europe/Paris = UTC+1)", () => {
+    const text = ["BEGIN:VEVENT", "UID:t1", "DTSTART;TZID=Europe/Paris:20260105T090000", "SUMMARY:Paris", "END:VEVENT"].join("\r\n");
+    const d = icsToEventDrafts(text)[0]!;
+    expect(d.start).toBe(Date.UTC(2026, 0, 5, 8, 0, 0)); // 09:00 Paris (UTC+1) = 08:00 UTC
+  });
+
+  it("parses a TZID-qualified DTSTART across the DST boundary (summer, Europe/Paris = UTC+2)", () => {
+    const text = ["BEGIN:VEVENT", "UID:t2", "DTSTART;TZID=Europe/Paris:20260705T090000", "SUMMARY:Été", "END:VEVENT"].join("\r\n");
+    const d = icsToEventDrafts(text)[0]!;
+    expect(d.start).toBe(Date.UTC(2026, 6, 5, 7, 0, 0)); // 09:00 Paris (UTC+2) = 07:00 UTC
+  });
+
+  it("falls back to floating (local) for an unknown TZID", () => {
+    const text = ["BEGIN:VEVENT", "UID:t3", "DTSTART;TZID=Not/AZone:20260105T090000", "SUMMARY:X", "END:VEVENT"].join("\r\n");
+    const d = icsToEventDrafts(text)[0]!;
+    expect(d.start).toBe(new Date(2026, 0, 5, 9, 0, 0).getTime());
+  });
 });

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { eventToVEvent, eventsToICS } from "./ics";
 import { parseEvent, type Event } from "../domain/event";
 
-const START = Date.UTC(2026, 0, 5, 9, 0, 0);
+const START = new Date(2026, 0, 5, 9, 0, 0).getTime(); // local 09:00
 const HOUR = 3600_000;
 
 function mk(extra: Partial<Event> = {}): Event {
@@ -17,8 +17,9 @@ describe("eventToVEvent", () => {
     const v = eventToVEvent(mk());
     expect(v).toContain("BEGIN:VEVENT");
     expect(v).toContain("UID:e1@retrorganizer");
-    expect(v).toContain("DTSTART:20260105T090000Z");
-    expect(v).toContain("DTEND:20260105T100000Z");
+    expect(v).toContain("DTSTART:20260105T090000");
+    expect(v).toContain("DTEND:20260105T100000");
+    expect(v).not.toContain("DTSTART:20260105T090000Z");
     expect(v).toContain("SUMMARY:Réu\\; A");
     expect(v.trim().endsWith("END:VEVENT")).toBe(true);
   });
@@ -32,7 +33,7 @@ describe("eventToVEvent", () => {
   it("includes RRULE and EXDATE when present", () => {
     const v = eventToVEvent(mk({ recurrence: "FREQ=DAILY", recurrenceExceptions: [START + 24 * HOUR] }));
     expect(v).toContain("RRULE:FREQ=DAILY");
-    expect(v).toContain("EXDATE:20260106T090000Z");
+    expect(v).toContain("EXDATE:20260106T090000");
   });
 
   it("omits LOCATION/DESCRIPTION when empty", () => {
