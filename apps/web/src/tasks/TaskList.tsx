@@ -1,11 +1,13 @@
 import { tokens } from "@retrorganizer/ui";
-import type { Task, TaskStatus } from "@retrorganizer/core";
+import { categoryById, type Task, type TaskStatus, type Category } from "@retrorganizer/core";
+import { CategoryTagBadges } from "../categories/CategoryTagBadges";
 
 export type StatusFilter = TaskStatus | "all";
 export type TaskSortKey = "priority" | "dueDate" | "title";
 
 export interface TaskListProps {
   tasks: Task[];
+  categories: Category[];
   onSelect(t: Task): void;
   onNew(): void;
   onToggleComplete(t: Task): void;
@@ -24,7 +26,7 @@ function dueLabel(ms: number): string {
 }
 
 export function TaskList(props: TaskListProps) {
-  const { tasks, onSelect, onNew, onToggleComplete, statusFilter, onStatusFilterChange, search, onSearchChange, sortKey, onSortKeyChange } = props;
+  const { tasks, categories, onSelect, onNew, onToggleComplete, statusFilter, onStatusFilterChange, search, onSearchChange, sortKey, onSortKeyChange } = props;
   return (
     <div style={{ padding: tokens.space.sm, font: `13px ${tokens.font.body}` }}>
       <div style={{ display: "flex", gap: tokens.space.sm, marginBottom: tokens.space.sm, flexWrap: "wrap" }}>
@@ -53,7 +55,8 @@ export function TaskList(props: TaskListProps) {
               <button type="button" onClick={() => onSelect(t)}
                 style={{ flex: 1, textAlign: "left", border: "none", background: "transparent", cursor: "pointer",
                   color: tokens.color.ink, textDecoration: t.status === "done" ? "line-through" : "none" }}>
-                {t.title}
+                <span style={{ display: "block" }}>{t.title}</span>
+                <CategoryTagBadges category={categoryById(categories, t.categoryId)} tags={t.tags} />
               </button>
               <span style={{ color: tokens.color.muted, fontSize: 11 }}>{PRIORITY_LABEL[t.priority]}</span>
               {t.dueDate !== null && <span style={{ color: tokens.color.muted, fontSize: 11 }}>{dueLabel(t.dueDate)}</span>}

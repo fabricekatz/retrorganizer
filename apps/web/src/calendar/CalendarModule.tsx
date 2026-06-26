@@ -6,6 +6,7 @@ import {
   type EventDraft, type Occurrence,
 } from "@retrorganizer/core";
 import { useEvents } from "./useEvents";
+import { useCategories } from "../categories/useCategories";
 import { MonthView } from "./MonthView";
 import { AgendaView } from "./AgendaView";
 import { TimeGridView } from "./TimeGridView";
@@ -47,6 +48,7 @@ export interface CalendarModuleProps {
 
 export function CalendarModule({ initialAnchor }: CalendarModuleProps) {
   const { events, loading, error, create, update, remove } = useEvents();
+  const { categories } = useCategories();
   const [view, setView] = useState<View>("month");
   const [anchor, setAnchor] = useState<number>(initialAnchor ?? startOfDay(Date.now()));
   const [editing, setEditing] = useState<{ draft: EventDraft; id: string | null } | null>(null);
@@ -124,7 +126,7 @@ export function CalendarModule({ initialAnchor }: CalendarModuleProps) {
           <MonthView year={new Date(anchor).getFullYear()} month={new Date(anchor).getMonth()}
             occurrences={occurrences} onSelectDay={newOnDay} onSelectOccurrence={openOccurrence} />
         ) : view === "agenda" ? (
-          <AgendaView occurrences={occurrences} onSelectOccurrence={openOccurrence} />
+          <AgendaView occurrences={occurrences} categories={categories} onSelectOccurrence={openOccurrence} />
         ) : (
           <TimeGridView days={view === "day" ? [startOfDay(anchor)] : weekDays(anchor)}
             occurrences={occurrences} onSelectOccurrence={openOccurrence} />

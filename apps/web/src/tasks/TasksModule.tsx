@@ -5,11 +5,13 @@ import {
   type Task, type TaskDraft,
 } from "@retrorganizer/core";
 import { useTasks } from "./useTasks";
+import { useCategories } from "../categories/useCategories";
 import { TaskList, type StatusFilter, type TaskSortKey } from "./TaskList";
 import { TaskForm } from "./TaskForm";
 
 export function TasksModule() {
   const { tasks, loading, error, create, update, remove } = useTasks();
+  const { categories } = useCategories();
   const [editing, setEditing] = useState<{ draft: TaskDraft; id: string | null } | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [search, setSearch] = useState("");
@@ -58,6 +60,7 @@ export function TasksModule() {
       {error && <p role="alert" style={{ color: "#a8431f", padding: tokens.space.sm }}>{error}</p>}
       <TaskList
         tasks={visible}
+        categories={categories}
         onSelect={(t) => setEditing({ draft: draftFromTask(t), id: t.id })}
         onNew={() => setEditing({ draft: emptyTaskDraft(), id: null })}
         onToggleComplete={onToggleComplete}
