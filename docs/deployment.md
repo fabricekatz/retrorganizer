@@ -153,6 +153,119 @@ reverted there or by redeploying a prior `firestore.rules` from git.
 
 ---
 
+## 7. Out-of-app push (FCM)
+
+This section covers the extra one-time steps needed to activate scheduled push
+reminders. Everything here is **optional for a basic deploy** — the app works
+without it (in-app reminder toasts still fire in the foreground). You need it if
+you want OS-level notifications when the tab is closed.
+
+### Blaze plan required
+
+Cloud Functions and Cloud Scheduler are not available on the Firebase Spark (free)
+plan. Before proceeding, upgrade the project to the **Blaze (pay-as-you-go)** plan
+in the Firebase console (Project settings → *Usage and billing*). Charges for a
+personal PIM at this scale are negligible, but the plan is a hard prerequisite.
+
+### Enable Cloud Messaging and generate a VAPID key
+
+1. In the Firebase console, go to **Project settings → Cloud Messaging** and confirm
+   the service is enabled for your project.
+2. Under *Web configuration*, click **Generate key pair** to create a **Web Push
+   certificate (VAPID key)**. Copy the key string.
+3. Add two variables to your web build environment (`.env.production` for manual
+   deploys; as CI *Variables* in GitHub Actions alongside the other `VITE_FIREBASE_*`
+   entries for automated deploys):
+
+   ```
+   VITE_FIREBASE_VAPID_KEY=<the key pair you just generated>
+   VITE_FIREBASE_MESSAGING_SENDER_ID=<Project settings → General → Sender ID>
+   ```
+
+   These are public values (no sensitive data), so adding them as CI variables
+   (not secrets) is correct.
+
+### Fill in the service worker placeholders
+
+The file `apps/web/public/firebase-messaging-sw.js` ships with placeholder values
+that must be replaced with your prod project's Web App config before deploying:
+
+```js
+firebase.initializeApp({
+  apiKey: "REPLACE_API_KEY",
+  authDomain: "REPLACE_AUTH_DOMAIN",
+  projectId: "REPLACE_PROJECT_ID",
+  appId: "REPLACE_APP_ID",
+  messagingSenderId: "REPLACE_MESSAGING_SENDER_ID",
+});
+```
+
+Get the real values from **Project settings → General → Your apps → Web app**
+(the same values used in `.env.production`). Replace all five `REPLACE_*`
+placeholders in place. These are public values — the service worker is served as a
+static file and cannot read Vite build-time env vars, so they must be hard-coded.
+
+> Do not commit the filled-in file; treat it like `.env.production`. Keep a local
+> copy or automate the substitution in your deploy script.
+
+### Deploy the Cloud Function
+
+```bash
+# First time (or after any change to functions/):
+firebase deploy --only functions
+```
+
+The first deploy creates the Cloud Scheduler job that triggers `sendReminders`
+every 5 minutes. Subsequent function deploys update the code without recreating
+the scheduler job.
+
+**CI (GitHub Actions):** once the Blaze plan is on, add `functions` to the
+`--only` list in `.github/workflows/deploy.yml`:
+
+```
+firebase deploy --only hosting,firestore:rules,firestore:indexes,functions
+```
+
+### How it works
+
+`sendReminders` (in `functions/src/index.ts`) runs on a Cloud Scheduler job every
+5 minutes. On each invocation it:
+
+1. Reads all documents in the `fcmTokens` collection to find owners with registered
+   devices.
+2. For each owner, reads `reminderState/{uid}.lastCheck` to get the timestamp of the
+   last check, establishing a **half-open window** (from that timestamp to now).
+3. Fetches the owner's events and tasks, finds any with a reminder that falls in the
+   window, and sends FCM notifications via `sendEachForMulticast`.
+4. Prunes any token that FCM reports as `messaging/registration-token-not-registered`
+   (stale tokens from browsers that have revoked permission or uninstalled the app).
+5. Writes `{ lastCheck: now }` back to `reminderState/{uid}` so the next run doesn't
+   re-fire the same reminders.
+
+**Coexistence with in-app reminders:** in-app reminder toasts continue to fire while
+the tab is open. The foreground FCM `onMessage` handler in `usePushNotifications.ts`
+is a no-op (`onMessage(messaging, () => {})`) so FCM messages received while the
+app is in the foreground are silently suppressed, avoiding double-notification.
+
+### Verify end-to-end
+
+1. Deploy with the VAPID key set and the service worker placeholders filled in.
+2. Open the app, sign in, and click **Activer les notifications** (the opt-in button
+   in the app). Grant OS-level notification permission when prompted.
+3. Close the browser tab (or navigate away so the app is in the background).
+4. Create an event a few minutes in the future and set a reminder on it.
+5. Wait for the next 5-minute Cloud Scheduler tick. You should receive an OS-level
+   notification even though the tab is closed.
+
+> **What is unit-tested vs. what requires a live Blaze project:** the reminder
+> sweep logic (`sweep.ts`) and send planning (`orchestrate.ts`) are fully unit-tested
+> under the emulator. Token registration and the `fcmTokens` Firestore rules are also
+> covered by tests. The scheduled trigger, actual FCM token delivery, and service
+> worker registration can only be verified on a deployed Blaze project — the steps
+> above are the manual verification path.
+
+---
+
 ## Quick reference
 
 | Task | Command |
@@ -160,6 +273,8 @@ reverted there or by redeploying a prior `firestore.rules` from git.
 | Prod build | `pnpm --filter @retrorganizer/web build` (with `.env.production`) |
 | Select prod project | `firebase use prod` |
 | Full deploy | `firebase deploy --only hosting,firestore:rules,firestore:indexes` |
+| Full deploy (with FCM) | `firebase deploy --only hosting,firestore:rules,firestore:indexes,functions` |
 | Hosting only | `firebase deploy --only hosting` |
+| Deploy functions only | `firebase deploy --only functions` |
 | Rollback hosting | `firebase hosting:rollback` |
 | Enable CI deploy | add `FIREBASE_SERVICE_ACCOUNT` secret + `VITE_FIREBASE_*` vars |
