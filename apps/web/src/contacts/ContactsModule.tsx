@@ -5,12 +5,14 @@ import {
   type Contact, type ContactDraft,
 } from "@retrorganizer/core";
 import { useContacts } from "./useContacts";
+import { useCategories } from "../categories/useCategories";
 import { ContactList, type SortKey } from "./ContactList";
 import { ContactForm } from "./ContactForm";
 import { ImportExportBar } from "./ImportExportBar";
 
 export function ContactsModule() {
   const { contacts, loading, error, create, update, remove } = useContacts();
+  const { categories } = useCategories();
   const [mode, setMode] = useState<"list" | "edit">("list");
   const [selected, setSelected] = useState<Contact | null>(null);
   const [query, setQuery] = useState("");
@@ -42,6 +44,7 @@ export function ContactsModule() {
           <ImportExportBar contacts={contacts} onImport={onImport} />
           <ContactList
             contacts={visible}
+            categories={categories}
             onSelect={(c) => { setSelected(c); setMode("edit"); }}
             onNew={() => { setSelected(null); setMode("edit"); }}
             query={query} onQueryChange={setQuery}

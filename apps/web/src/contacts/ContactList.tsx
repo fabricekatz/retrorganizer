@@ -1,10 +1,12 @@
 import { tokens } from "@retrorganizer/ui";
-import type { Contact } from "@retrorganizer/core";
+import { categoryById, type Contact, type Category } from "@retrorganizer/core";
+import { CategoryTagBadges } from "../categories/CategoryTagBadges";
 
 export type SortKey = "name" | "organization";
 
 export interface ContactListProps {
   contacts: Contact[];
+  categories: Category[];
   onSelect(c: Contact): void;
   onNew(): void;
   query: string;
@@ -13,7 +15,7 @@ export interface ContactListProps {
   onSortKeyChange(k: SortKey): void;
 }
 
-export function ContactList({ contacts, onSelect, onNew, query, onQueryChange, sortKey, onSortKeyChange }: ContactListProps) {
+export function ContactList({ contacts, categories, onSelect, onNew, query, onQueryChange, sortKey, onSortKeyChange }: ContactListProps) {
   return (
     <div style={{ padding: tokens.space.sm, font: `13px ${tokens.font.body}` }}>
       <div style={{ display: "flex", gap: tokens.space.sm, marginBottom: tokens.space.sm }}>
@@ -33,7 +35,8 @@ export function ContactList({ contacts, onSelect, onNew, query, onQueryChange, s
               style={{ display: "block", width: "100%", textAlign: "left", border: "none",
                 borderBottom: `1px solid ${tokens.color.line}`, background: "transparent",
                 padding: tokens.space.xs, cursor: "pointer", color: tokens.color.ink }}>
-              {c.displayName}{c.organization ? ` — ${c.organization}` : ""}
+              <span style={{ display: "block" }}>{c.displayName}{c.organization ? ` — ${c.organization}` : ""}</span>
+              <CategoryTagBadges category={categoryById(categories, c.categoryId)} tags={c.tags} />
             </button>
           </li>
         ))}
