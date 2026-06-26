@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { TasksModule } from "./TasksModule";
 
 const listByOwner = vi.fn();
@@ -35,7 +36,7 @@ beforeEach(() => {
 
 describe("TasksModule", () => {
   it("completing a non-recurring task marks it done", async () => {
-    render(<TasksModule />);
+    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><TasksModule /></MemoryRouter>);
     await waitFor(() => expect(screen.getByLabelText("Terminer Acheter pain")).toBeInTheDocument());
     fireEvent.click(screen.getByLabelText("Terminer Acheter pain"));
     await waitFor(() => expect(update).toHaveBeenCalledTimes(1));
@@ -46,7 +47,7 @@ describe("TasksModule", () => {
   it("completing a recurring task advances its due date and stays todo", async () => {
     const DUE = Date.UTC(2026, 0, 5, 9);
     listByOwner.mockReset().mockResolvedValue([task({ recurrence: "FREQ=WEEKLY", dueDate: DUE })]);
-    render(<TasksModule />);
+    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><TasksModule /></MemoryRouter>);
     await waitFor(() => expect(screen.getByLabelText("Terminer Acheter pain")).toBeInTheDocument());
     fireEvent.click(screen.getByLabelText("Terminer Acheter pain"));
     await waitFor(() => expect(update).toHaveBeenCalledTimes(1));
@@ -58,10 +59,23 @@ describe("TasksModule", () => {
   it("completing a recurring task with an exhausted rule marks it done", async () => {
     const DUE = Date.UTC(2026, 0, 5, 9);
     listByOwner.mockReset().mockResolvedValue([task({ recurrence: "FREQ=DAILY;COUNT=1", dueDate: DUE })]);
-    render(<TasksModule />);
+    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><TasksModule /></MemoryRouter>);
     await waitFor(() => expect(screen.getByLabelText("Terminer Acheter pain")).toBeInTheDocument());
     fireEvent.click(screen.getByLabelText("Terminer Acheter pain"));
     await waitFor(() => expect(update).toHaveBeenCalledTimes(1));
     expect((update.mock.calls[0]![1] as { status: string }).status).toBe("done");
+  });
+
+  it("opens editor for the focused task when ?focus=<id> is in the URL", async () => {
+    listByOwner.mockReset().mockResolvedValue([task({ id: "t9", title: "Write spec" })]);
+    render(
+      <MemoryRouter
+        initialEntries={["/todo?focus=t9"]}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <TasksModule />
+      </MemoryRouter>,
+    );
+    await waitFor(() => expect(screen.getByRole("button", { name: /supprimer/i })).toBeInTheDocument());
   });
 });
