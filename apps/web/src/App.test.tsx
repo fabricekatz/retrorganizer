@@ -21,20 +21,23 @@ vi.mock("./reminders/ReminderHost", () => ({
 }));
 
 describe("App", () => {
-  it("renders the 8 section tabs for an authenticated user", () => {
+  it("renders the 8 section tabs for an authenticated user", async () => {
     render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={["/diary"]}><App /></MemoryRouter>);
     const tabs = screen.getAllByRole("tab");
     expect(tabs).toHaveLength(8);
     expect(screen.getByRole("tab", { name: "Address" })).toBeInTheDocument();
+    await screen.findByTestId("calendar-module");
   });
 
-  it("shows the Retrorganizer wordmark in the menu bar", () => {
+  it("shows the Retrorganizer wordmark in the menu bar", async () => {
     render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={["/diary"]}><App /></MemoryRouter>);
     expect(screen.getByText("Retrorganizer")).toBeInTheDocument();
+    await screen.findByTestId("calendar-module");
   });
 
-  it("shows the trash button in the header", () => {
+  it("shows the trash button in the header", async () => {
     render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={["/diary"]}><App /></MemoryRouter>);
     expect(screen.getByRole("button", { name: "Corbeille" })).toBeInTheDocument();
+    await screen.findByTestId("calendar-module");
   });
 });

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { Tab, tokens, moduleAccent } from "@retrorganizer/ui";
 import { SECTIONS } from "./routes/sections";
@@ -6,14 +6,15 @@ import { ComingSoon } from "./routes/ComingSoon";
 import { SectionPlaceholder } from "./routes/SectionPlaceholder";
 import { useAuth } from "./auth/AuthProvider";
 import { LoginScreen } from "./auth/LoginScreen";
-import { ContactsModule } from "./contacts/ContactsModule";
-import { CalendarModule } from "./calendar/CalendarModule";
-import { TasksModule } from "./tasks/TasksModule";
-import { NotesModule } from "./notes/NotesModule";
 import { GlobalSearchBar } from "./search/GlobalSearchBar";
 import { TrashPanel } from "./trash/TrashPanel";
 import { CategoryManager } from "./categories/CategoryManager";
 import { ReminderHost } from "./reminders/ReminderHost";
+
+const ContactsModule = lazy(() => import("./contacts/ContactsModule").then((m) => ({ default: m.ContactsModule })));
+const CalendarModule = lazy(() => import("./calendar/CalendarModule").then((m) => ({ default: m.CalendarModule })));
+const TasksModule = lazy(() => import("./tasks/TasksModule").then((m) => ({ default: m.TasksModule })));
+const NotesModule = lazy(() => import("./notes/NotesModule").then((m) => ({ default: m.NotesModule })));
 
 export function App() {
   const { user, loading, signOut } = useAuth();
@@ -51,26 +52,28 @@ export function App() {
 
         <main style={{ flex: 1, overflow: "auto", background: tokens.color.surface,
           margin: tokens.space.md, border: `1px solid ${tokens.color.line}`, borderRadius: tokens.radius.md }}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/diary" replace />} />
-            {SECTIONS.map((s) => (
-              <Route key={s.id} path={s.path}
-                element={
-                  s.id === "diary"
-                    ? <CalendarModule />
-                    : s.id === "todo"
-                      ? <TasksModule />
-                      : s.id === "address"
-                        ? <ContactsModule />
-                        : s.id === "notepad"
-                          ? <NotesModule />
-                          : s.mvp
-                            ? <SectionPlaceholder label={s.label} />
-                            : <ComingSoon label={s.label} />
-                } />
-            ))}
-            <Route path="*" element={<Navigate to="/diary" replace />} />
-          </Routes>
+          <Suspense fallback={<div style={{ padding: tokens.space.lg }}>Chargement…</div>}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/diary" replace />} />
+              {SECTIONS.map((s) => (
+                <Route key={s.id} path={s.path}
+                  element={
+                    s.id === "diary"
+                      ? <CalendarModule />
+                      : s.id === "todo"
+                        ? <TasksModule />
+                        : s.id === "address"
+                          ? <ContactsModule />
+                          : s.id === "notepad"
+                            ? <NotesModule />
+                            : s.mvp
+                              ? <SectionPlaceholder label={s.label} />
+                              : <ComingSoon label={s.label} />
+                  } />
+              ))}
+              <Route path="*" element={<Navigate to="/diary" replace />} />
+            </Routes>
+          </Suspense>
         </main>
       </div>
     </div>
