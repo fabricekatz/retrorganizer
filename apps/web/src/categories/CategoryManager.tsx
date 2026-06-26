@@ -1,8 +1,32 @@
+import { useState, useEffect } from "react";
 import { tokens } from "@retrorganizer/ui";
+import type { Category } from "@retrorganizer/core";
 import { useCategories } from "./useCategories";
 
 export interface CategoryManagerProps {
   onClose(): void;
+}
+
+function CategoryRow({ category, onRecolor, onRename, onDelete }: {
+  category: Category;
+  onRecolor(id: string, color: string): void;
+  onRename(id: string, current: string): void;
+  onDelete(category: Category): void;
+}) {
+  const [color, setColor] = useState(category.color);
+  useEffect(() => { setColor(category.color); }, [category.color]);
+  return (
+    <li style={{ display: "flex", alignItems: "center", gap: tokens.space.xs,
+      borderBottom: `1px solid ${tokens.color.line}`, padding: tokens.space.xs }}>
+      <input type="color" aria-label={`Couleur ${category.name}`} value={color}
+        onChange={(e) => setColor(e.target.value)}
+        onBlur={(e) => { if (e.target.value !== category.color) onRecolor(category.id, e.target.value); }}
+        style={{ width: 24, height: 24, padding: 0, border: "none", background: "none" }} />
+      <span style={{ flex: 1 }}>{category.name}</span>
+      <button type="button" onClick={() => onRename(category.id, category.name)}>Renommer</button>
+      <button type="button" onClick={() => onDelete(category)}>Supprimer</button>
+    </li>
+  );
 }
 
 export function CategoryManager({ onClose }: CategoryManagerProps) {
@@ -32,17 +56,10 @@ export function CategoryManager({ onClose }: CategoryManagerProps) {
       ) : (
         <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
           {categories.map((c) => (
-            <li key={c.id} style={{ display: "flex", alignItems: "center", gap: tokens.space.xs,
-              borderBottom: `1px solid ${tokens.color.line}`, padding: tokens.space.xs }}>
-              <input type="color" aria-label={`Couleur ${c.name}`} value={c.color}
-                onChange={(e) => void updateCategory(c.id, { color: e.target.value })}
-                style={{ width: 24, height: 24, padding: 0, border: "none", background: "none" }} />
-              <span style={{ flex: 1 }}>{c.name}</span>
-              <button type="button" onClick={() => rename(c.id, c.name)}>Renommer</button>
-              <button type="button" onClick={() => { if (window.confirm(`Supprimer la catégorie « ${c.name} » ?`)) void removeCategory(c.id); }}>
-                Supprimer
-              </button>
-            </li>
+            <CategoryRow key={c.id} category={c}
+              onRecolor={(id, col) => void updateCategory(id, { color: col })}
+              onRename={rename}
+              onDelete={(cat) => { if (window.confirm(`Supprimer la catégorie « ${cat.name} » ?`)) void removeCategory(cat.id); }} />
           ))}
         </ul>
       )}
