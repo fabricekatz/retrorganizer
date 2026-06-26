@@ -70,18 +70,57 @@ function parseICalLine(line: string): ICalLine | null {
   return { name, params, value };
 }
 
-// "20260105T090000Z" | "20260105T090000" | "20260105"
+// Offset (ms) of an IANA zone at a given instant: (zone wall-clock shown for utcMs) - utcMs.
+function zoneOffsetMs(zone: string, utcMs: number): number {
+  const dtf = new Intl.DateTimeFormat("en-US", {
+    timeZone: zone, hourCycle: "h23",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+  });
+  const parts: Record<string, string> = {};
+  for (const p of dtf.formatToParts(new Date(utcMs))) parts[p.type] = p.value;
+  const asUTC = Date.UTC(
+    Number(parts["year"]), Number(parts["month"]) - 1, Number(parts["day"]),
+    Number(parts["hour"]), Number(parts["minute"]), Number(parts["second"]),
+  );
+  return asUTC - utcMs;
+}
+
+// Real instant for a wall-clock (y, mo[1-12], da, hh, mi, ss) interpreted in `zone`.
+// Falls back to local time if `zone` is invalid. Refines once for DST boundaries.
+function instantFromZonedWallClock(zone: string, y: number, mo: number, da: number, hh: number, mi: number, ss: number): number {
+  const guess = Date.UTC(y, mo - 1, da, hh, mi, ss);
+  try {
+    const off1 = zoneOffsetMs(zone, guess);
+    let instant = guess - off1;
+    const off2 = zoneOffsetMs(zone, instant);
+    if (off2 !== off1) instant = guess - off2;
+    return instant;
+  } catch {
+    return new Date(y, mo - 1, da, hh, mi, ss).getTime();
+  }
+}
+
+// "20260105T090000Z" (UTC) | "20260105T090000" (floating/local or TZID) | "20260105" (date)
 function parseICalDate(value: string, params: Record<string, string>): { ms: number; dateOnly: boolean } | null {
   const v = value.trim();
-  const m = v.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})Z?)?$/);
+  const m = v.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?$/);
   if (!m) return null;
-  const [, y, mo, da, hh, mi, ss] = m;
+  const [, y, mo, da, hh, mi, ss, z] = m;
   const dateOnly = hh === undefined || params["VALUE"] === "DATE";
-  const ms = Date.UTC(
-    Number(y), Number(mo) - 1, Number(da),
-    Number(hh ?? "0"), Number(mi ?? "0"), Number(ss ?? "0"),
-  );
-  return { ms, dateOnly };
+  if (dateOnly) {
+    return { ms: Date.UTC(Number(y), Number(mo) - 1, Number(da)), dateOnly: true };
+  }
+  const Y = Number(y), Mo = Number(mo), Da = Number(da);
+  const H = Number(hh ?? "0"), Mi = Number(mi ?? "0"), S = Number(ss ?? "0");
+  if (z === "Z") {
+    return { ms: Date.UTC(Y, Mo - 1, Da, H, Mi, S), dateOnly: false };
+  }
+  const tzid = params["TZID"];
+  if (tzid !== undefined && tzid !== "") {
+    return { ms: instantFromZonedWallClock(tzid, Y, Mo, Da, H, Mi, S), dateOnly: false };
+  }
+  return { ms: new Date(Y, Mo - 1, Da, H, Mi, S).getTime(), dateOnly: false };
 }
 
 export function icsToEventDrafts(text: string): EventDraft[] {
