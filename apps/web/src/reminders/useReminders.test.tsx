@@ -13,7 +13,20 @@ const event = {
   reminderOffsets: [10], contactIds: [], taskIds: [], categoryId: null, color: "", tags: [],
 };
 
+// A task whose 0-min reminder fires 30s after T0 (dueDate falls inside the first 60s tick).
+const taskFixture = {
+  id: "t1", ownerId: "u1", createdAt: 1, updatedAt: 1, deletedAt: null,
+  title: "Finir rapport", description: "", priority: "normal" as const,
+  dueDate: T0 + 30000, status: "todo" as const, completedAt: null,
+  subtasks: [], recurrence: null, contactIds: [], eventId: null,
+  categoryId: null, tags: [], reminderOffsets: [0],
+};
+
+// Mutable so individual tests can inject tasks (or leave empty).
+let mockTasks: typeof taskFixture[] = [];
+
 vi.mock("../calendar/useEvents", () => ({ useEvents: () => ({ events: [event] }) }));
+vi.mock("../tasks/useTasks", () => ({ useTasks: () => ({ tasks: mockTasks }) }));
 
 const notifCtor = vi.fn();
 class MockNotification {
@@ -23,6 +36,7 @@ class MockNotification {
 }
 
 beforeEach(() => {
+  mockTasks = []; // default: no tasks, so existing event tests are unaffected
   vi.useFakeTimers();
   vi.setSystemTime(T0);
   notifCtor.mockReset();
@@ -50,5 +64,16 @@ describe("useReminders", () => {
     const key = `${result.current.due[0]!.entityId}:${result.current.due[0]!.occurrenceStart}:${result.current.due[0]!.fireAt}`;
     act(() => { result.current.dismiss(key); });
     expect(result.current.due).toEqual([]);
+  });
+
+  it("fires a due task reminder on the interval tick (in-app + Notification)", () => {
+    mockTasks = [taskFixture];
+    const { result } = renderHook(() => useReminders());
+    expect(result.current.due).toEqual([]);
+    act(() => { vi.advanceTimersByTime(60 * 1000); }); // now = T0 + 60s
+    const taskHit = result.current.due.find((h) => h.entityId === "t1");
+    expect(taskHit).toBeDefined();
+    expect(taskHit!.type).toBe("task");
+    expect(notifCtor).toHaveBeenCalledWith("Finir rapport", { body: "Rappel de tâche" });
   });
 });

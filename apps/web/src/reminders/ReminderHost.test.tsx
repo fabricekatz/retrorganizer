@@ -21,4 +21,11 @@ describe("ReminderHost", () => {
     fireEvent.click(screen.getByRole("button", { name: "Fermer le rappel" }));
     expect(dismiss).toHaveBeenCalledWith("e1:700:100");
   });
+
+  it("shows 'Rappel de tâche' label for task reminders", () => {
+    due = [{ type: "task", entityId: "t1", title: "Finir rapport", fireAt: 200, occurrenceStart: 800 }];
+    render(<ReminderHost />);
+    expect(screen.getByText("Rappel de tâche")).toBeInTheDocument();
+    expect(screen.getByText("Finir rapport")).toBeInTheDocument();
+  });
 });
