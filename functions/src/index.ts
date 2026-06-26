@@ -17,7 +17,8 @@ export const sendReminders = onSchedule("every 5 minutes", async () => {
   const tokensSnap = await db.collection("fcmTokens").get();
   const tokensByOwner = new Map<string, string[]>();
   for (const d of tokensSnap.docs) {
-    const ownerId = d.get("ownerId") as string | undefined;
+    const ownerIdRaw = d.get("ownerId");
+    const ownerId = typeof ownerIdRaw === "string" ? ownerIdRaw : undefined;
     if (!ownerId) continue;
     const arr = tokensByOwner.get(ownerId) ?? [];
     arr.push(d.id);
@@ -28,7 +29,8 @@ export const sendReminders = onSchedule("every 5 minutes", async () => {
   for (const [ownerId, tokens] of tokensByOwner) {
     const stateRef = db.doc(`reminderState/${ownerId}`);
     const stateSnap = await stateRef.get();
-    const lastCheck = (stateSnap.get("lastCheck") as number | undefined) ?? now - HALF_OPEN_DEFAULT_LOOKBACK;
+    const lastCheckRaw = stateSnap.get("lastCheck");
+    const lastCheck = typeof lastCheckRaw === "number" ? lastCheckRaw : now - HALF_OPEN_DEFAULT_LOOKBACK;
     const [evSnap, tkSnap] = await Promise.all([
       db.collection("events").where("ownerId", "==", ownerId).where("deletedAt", "==", null).get(),
       db.collection("tasks").where("ownerId", "==", ownerId).where("deletedAt", "==", null).get(),
