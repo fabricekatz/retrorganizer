@@ -18,6 +18,13 @@ const RECUR: { label: string; value: string }[] = [
   { label: "Aucune", value: "" }, { label: "Tous les jours", value: "FREQ=DAILY" },
   { label: "Toutes les semaines", value: "FREQ=WEEKLY" }, { label: "Tous les mois", value: "FREQ=MONTHLY" },
 ];
+const TASK_REMINDER_PRESETS: { label: string; value: number }[] = [
+  { label: "Aucun", value: -1 },
+  { label: "Le jour même", value: 0 },
+  { label: "1 jour avant", value: 1440 },
+  { label: "2 jours avant", value: 2880 },
+  { label: "1 semaine avant", value: 10080 },
+];
 
 export interface TaskFormProps {
   initial?: TaskDraft;
@@ -56,6 +63,13 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
       <label>Échéance
         <input aria-label="Échéance" type="date" value={draft.dueDate ? toDateInput(draft.dueDate) : ""}
           onChange={(e) => set("dueDate", e.target.value ? fromDateInput(e.target.value) : null)} style={{ display: "block" }} />
+      </label>
+      <label>Rappel
+        <select aria-label="Rappel" value={draft.reminderOffsets[0] ?? -1}
+          onChange={(e) => set("reminderOffsets", Number(e.target.value) < 0 ? [] : [Number(e.target.value)])}
+          style={{ display: "block" }}>
+          {TASK_REMINDER_PRESETS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+        </select>
       </label>
       <label>Statut
         <select aria-label="Statut" value={draft.status} onChange={(e) => set("status", e.target.value as TaskDraft["status"])} style={{ display: "block" }}>

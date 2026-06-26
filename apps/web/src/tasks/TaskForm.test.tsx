@@ -49,4 +49,14 @@ describe("TaskForm", () => {
     const d = onSubmit.mock.calls[0]![0] as import("@retrorganizer/core").TaskDraft;
     expect(d.dueDate).toBeNull();
   });
+
+  it("sets a task reminder offset", () => {
+    const onSubmit = vi.fn();
+    render(<TaskForm onSubmit={onSubmit} onCancel={() => {}} />);
+    fireEvent.change(screen.getByLabelText("Titre"), { target: { value: "Payer loyer" } });
+    fireEvent.change(screen.getByLabelText("Rappel"), { target: { value: "1440" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enregistrer" }));
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit.mock.calls[0]![0].reminderOffsets).toEqual([1440]);
+  });
 });
