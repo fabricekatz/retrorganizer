@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { CalendarModule } from "./CalendarModule";
+import { EventsProvider } from "./useEvents";
 
 const listByOwner = vi.fn();
 const create = vi.fn();
@@ -29,7 +30,7 @@ const ANCHOR = new Date(2026, 0, 15).getTime();
 
 describe("CalendarModule", () => {
   it("renders the month view by default with the four view switches", async () => {
-    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><CalendarModule initialAnchor={ANCHOR} /></MemoryRouter>);
+    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><EventsProvider><CalendarModule initialAnchor={ANCHOR} /></EventsProvider></MemoryRouter>);
     await waitFor(() => expect(screen.getByRole("button", { name: "Mois" })).toBeInTheDocument());
     expect(screen.getByRole("button", { name: "Semaine" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Jour" })).toBeInTheDocument();
@@ -38,7 +39,7 @@ describe("CalendarModule", () => {
   });
 
   it("creates an event through the new-event flow", async () => {
-    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><CalendarModule initialAnchor={ANCHOR} /></MemoryRouter>);
+    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><EventsProvider><CalendarModule initialAnchor={ANCHOR} /></EventsProvider></MemoryRouter>);
     await waitFor(() => expect(screen.getByRole("button", { name: "+ Nouvel événement" })).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: "+ Nouvel événement" }));
     fireEvent.change(screen.getByLabelText("Titre"), { target: { value: "Réunion" } });
@@ -51,7 +52,7 @@ describe("CalendarModule", () => {
   });
 
   it("switches to the agenda view", async () => {
-    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><CalendarModule initialAnchor={ANCHOR} /></MemoryRouter>);
+    render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><EventsProvider><CalendarModule initialAnchor={ANCHOR} /></EventsProvider></MemoryRouter>);
     await waitFor(() => expect(screen.getByRole("button", { name: "Agenda" })).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: "Agenda" }));
     expect(screen.getByText("Aucun événement")).toBeInTheDocument();
@@ -87,7 +88,7 @@ describe("CalendarModule", () => {
         initialEntries={["/diary?focus=e9"]}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
-        <CalendarModule initialAnchor={ANCHOR} />
+        <EventsProvider><CalendarModule initialAnchor={ANCHOR} /></EventsProvider>
       </MemoryRouter>,
     );
     // EventForm renders the title in an input; assert the editor opened
