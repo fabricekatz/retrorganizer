@@ -12,6 +12,7 @@ export * from "./domain/note";
 export * from "./firebase/app";
 export * from "./repositories/base";
 export * from "./repositories/categories";
+export * from "./repositories/categoryCleanup";
 export * from "./repositories/contacts";
 export * from "./repositories/events";
 export * from "./repositories/tasks";

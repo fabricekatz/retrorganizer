@@ -4,13 +4,16 @@ import { useCategories } from "./useCategories";
 
 const listByOwner = vi.fn();
 const create = vi.fn();
+const softDelete = vi.fn();
+const clearCategoryReferences = vi.fn();
 vi.mock("@retrorganizer/core", () => ({
   categoriesRepo: {
     listByOwner: (...a: unknown[]) => listByOwner(...a),
     create: (...a: unknown[]) => create(...a),
     update: vi.fn(),
-    softDelete: vi.fn(),
+    softDelete: (...a: unknown[]) => softDelete(...a),
   },
+  clearCategoryReferences: (...a: unknown[]) => clearCategoryReferences(...a),
 }));
 let mockUser: { uid: string } | null = { uid: "u1" };
 vi.mock("../auth/AuthProvider", () => ({ useAuth: () => ({ user: mockUser }) }));
@@ -19,6 +22,8 @@ beforeEach(() => {
   mockUser = { uid: "u1" };
   listByOwner.mockReset().mockResolvedValue([{ id: "cat1", ownerId: "u1", name: "Travail", color: "#f00", createdAt: 1, updatedAt: 1, deletedAt: null }]);
   create.mockReset().mockResolvedValue({ id: "cat2", ownerId: "u1", name: "Perso", color: "#0f0", createdAt: 1, updatedAt: 1, deletedAt: null });
+  softDelete.mockReset().mockResolvedValue(undefined);
+  clearCategoryReferences.mockReset().mockResolvedValue(undefined);
 });
 
 describe("useCategories", () => {
@@ -36,6 +41,17 @@ describe("useCategories", () => {
     expect(newId).toBe("cat2");
     expect(create).toHaveBeenCalledWith("u1", { name: "Perso", color: "#0f0" });
     expect(listByOwner).toHaveBeenCalledTimes(2);
+  });
+
+  it("removeCategory clears references before soft-deleting, then reloads", async () => {
+    const { result } = renderHook(() => useCategories());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    listByOwner.mockClear();
+    await act(async () => { await result.current.removeCategory("cat1"); });
+    expect(clearCategoryReferences).toHaveBeenCalledWith("u1", "cat1");
+    expect(softDelete).toHaveBeenCalledWith("cat1");
+    expect(clearCategoryReferences.mock.invocationCallOrder[0]!).toBeLessThan(softDelete.mock.invocationCallOrder[0]!);
+    expect(listByOwner).toHaveBeenCalledTimes(1); // reload after delete
   });
 
   it("returns empty/not-loading with no user", async () => {
