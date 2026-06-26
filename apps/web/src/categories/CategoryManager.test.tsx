@@ -22,11 +22,31 @@ beforeEach(() => {
 });
 
 describe("CategoryManager", () => {
-  it("lists categories and recolors via the color input", () => {
+  it("lists categories and recolors on blur (not on every change)", () => {
     render(<CategoryManager onClose={() => {}} />);
     expect(screen.getByText("Travail")).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("Couleur Travail"), { target: { value: "#1f4e79" } });
+    const input = screen.getByLabelText("Couleur Travail");
+    fireEvent.change(input, { target: { value: "#1f4e79" } });
+    fireEvent.blur(input);
     expect(updateCategory).toHaveBeenCalledWith("c1", { color: "#1f4e79" });
+  });
+
+  it("does not call updateCategory during drags — only commits once on blur", () => {
+    render(<CategoryManager onClose={() => {}} />);
+    const input = screen.getByLabelText("Couleur Travail");
+    fireEvent.change(input, { target: { value: "#111111" } });
+    fireEvent.change(input, { target: { value: "#222222" } });
+    expect(updateCategory).not.toHaveBeenCalled();
+    fireEvent.blur(input);
+    expect(updateCategory).toHaveBeenCalledTimes(1);
+    expect(updateCategory).toHaveBeenCalledWith("c1", { color: "#222222" });
+  });
+
+  it("does not call updateCategory on blur when color is unchanged", () => {
+    render(<CategoryManager onClose={() => {}} />);
+    const input = screen.getByLabelText("Couleur Travail");
+    fireEvent.blur(input);
+    expect(updateCategory).not.toHaveBeenCalled();
   });
 
   it("renames via prompt", () => {
