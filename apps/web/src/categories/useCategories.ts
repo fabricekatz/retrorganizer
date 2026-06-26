@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { categoriesRepo, type Category, type CategoryDraft } from "@retrorganizer/core";
+import { categoriesRepo, clearCategoryReferences, type Category, type CategoryDraft } from "@retrorganizer/core";
 import { useAuth } from "../auth/AuthProvider";
 
 export interface UseCategories {
@@ -55,10 +55,16 @@ export function useCategories(): UseCategories {
   }, [reload]);
 
   const removeCategory = useCallback(async (id: string) => {
-    try { await categoriesRepo.softDelete(id); }
-    catch (e) { setError(e instanceof Error ? e.message : "Échec de la suppression"); return; }
+    if (!uid) return;
+    try {
+      await clearCategoryReferences(uid, id);
+      await categoriesRepo.softDelete(id);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Échec de la suppression");
+      return;
+    }
     await reload();
-  }, [reload]);
+  }, [uid, reload]);
 
   return { categories, loading, error, createCategory, updateCategory, removeCategory, reload };
 }
