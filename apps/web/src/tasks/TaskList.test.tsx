@@ -1,13 +1,18 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TaskList } from "./TaskList";
-import { parseTask, type Task } from "@retrorganizer/core";
+import { parseTask, type Task, type Category } from "@retrorganizer/core";
 
 function mk(id: string, extra: Partial<Task> = {}): Task {
   return parseTask({ id, ownerId: "u1", createdAt: 1, updatedAt: 1, deletedAt: null, title: id, ...extra });
 }
 
+const categories: Category[] = [
+  { id: "c1", ownerId: "u1", createdAt: 1, updatedAt: 1, deletedAt: null, name: "Travail", color: "#2f6f4f" },
+];
+
 const base = {
+  categories,
   onSelect: () => {}, onNew: () => {}, onToggleComplete: () => {},
   statusFilter: "all" as const, onStatusFilterChange: () => {},
   search: "", onSearchChange: () => {},
@@ -44,5 +49,14 @@ describe("TaskList", () => {
     render(<TaskList {...base} tasks={[]} onSearchChange={onSearchChange} />);
     fireEvent.change(screen.getByLabelText("Rechercher"), { target: { value: "pain" } });
     expect(onSearchChange).toHaveBeenCalledWith("pain");
+  });
+
+  it("shows the category name and tags for a task", () => {
+    render(<TaskList tasks={[mk("T", { categoryId: "c1", tags: ["urgent"] })]} {...base}
+      onSelect={() => {}} onNew={() => {}} onToggleComplete={() => {}}
+      statusFilter="all" onStatusFilterChange={() => {}}
+      search="" onSearchChange={() => {}} sortKey="priority" onSortKeyChange={() => {}} />);
+    expect(screen.getByText("Travail")).toBeInTheDocument();
+    expect(screen.getByText("urgent")).toBeInTheDocument();
   });
 });
