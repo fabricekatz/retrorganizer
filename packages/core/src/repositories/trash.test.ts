@@ -1,23 +1,21 @@
-import { describe, it, expect, beforeAll, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import { initFirebase, getFirebase } from "../firebase/app";
 import { contactsRepo } from "./contacts";
+import { clearFirestoreEmulator } from "../firebase/emulatorTestSupport";
 import { signInAnonymously } from "firebase/auth";
 
+const PROJECT_ID = "retrorganizer-dev";
 let uid: string;
 
 beforeAll(async () => {
-  initFirebase({ apiKey: "x", authDomain: "x", projectId: "retrorganizer-dev", appId: "x" }, true);
+  initFirebase({ apiKey: "x", authDomain: "x", projectId: PROJECT_ID, appId: "x" }, true);
   const cred = await signInAnonymously(getFirebase().auth);
   uid = cred.user.uid;
 });
 
-// Owner-scoped cleanup (the anon uid is unique to THIS test file), so it never
-// wipes other emulator test files' data — uses hardDelete (the method under test).
-afterEach(async () => {
-  const active = await contactsRepo.listByOwner(uid);
-  const deleted = await contactsRepo.listDeletedByOwner(uid);
-  await Promise.all([...active, ...deleted].map((c) => contactsRepo.hardDelete(c.id)));
-});
+// Hermetic isolation: wipe the emulator before each test so every test starts
+// from a clean slate, instead of relying on owner-scoped manual cleanup.
+beforeEach(() => clearFirestoreEmulator(PROJECT_ID));
 
 describe("repository trash operations", () => {
   it("listDeletedByOwner returns only soft-deleted docs; listByOwner excludes them", async () => {

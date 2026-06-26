@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from "vitest";
 import { readFileSync } from "node:fs";
 import {
   initializeTestEnvironment,
@@ -16,6 +16,10 @@ beforeAll(async () => {
     firestore: { rules: readFileSync("../../firestore.rules", "utf8") },
   });
 });
+
+// Hermetic isolation: clear the (shared "retrorganizer-dev") emulator data
+// before each test so this file leaves no residue for the repo test files.
+beforeEach(async () => { await env.clearFirestore(); });
 
 afterAll(async () => { await env.cleanup(); });
 
