@@ -7,6 +7,7 @@ export interface FirebaseConfig {
   authDomain: string;
   projectId: string;
   appId: string;
+  messagingSenderId?: string;
 }
 
 let cached: { app: FirebaseApp; auth: Auth; db: Firestore } | null = null;

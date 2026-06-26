@@ -20,6 +20,8 @@ vi.mock("./reminders/ReminderHost", () => ({
   ReminderHost: () => <div data-testid="reminder-host" />,
 }));
 
+vi.mock("./notifications/PushOptIn", () => ({ PushOptIn: () => null }));
+
 vi.mock("./calendar/useEvents", () => ({
   EventsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useEvents: () => ({ events: [], loading: false, error: null, create: vi.fn(), update: vi.fn(), remove: vi.fn(), reload: vi.fn() }),
