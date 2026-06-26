@@ -12,6 +12,7 @@ import { TasksModule } from "./tasks/TasksModule";
 import { NotesModule } from "./notes/NotesModule";
 import { GlobalSearchBar } from "./search/GlobalSearchBar";
 import { TrashPanel } from "./trash/TrashPanel";
+import { CategoryManager } from "./categories/CategoryManager";
 import { ReminderHost } from "./reminders/ReminderHost";
 
 export function App() {
@@ -19,6 +20,7 @@ export function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [trashOpen, setTrashOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
 
   if (loading) return <div style={{ padding: tokens.space.xl }}>Chargement…</div>;
   if (!user) return <LoginScreen />;
@@ -30,9 +32,11 @@ export function App() {
         font: `13px ${tokens.font.body}` }}>
         <strong style={{ color: tokens.color.ink }}>Retrorganizer</strong>
         <GlobalSearchBar />
+        <button type="button" onClick={() => setCategoriesOpen((o) => !o)}>Catégories</button>
         <button type="button" onClick={() => setTrashOpen((o) => !o)}>Corbeille</button>
         <button onClick={() => signOut()}>Déconnexion</button>
       </header>
+      {categoriesOpen && <CategoryManager onClose={() => setCategoriesOpen(false)} />}
       {trashOpen && <TrashPanel onClose={() => setTrashOpen(false)} />}
       <ReminderHost />
 
