@@ -30,4 +30,13 @@ describe("usePushNotifications", () => {
     expect(getToken).toHaveBeenCalled();
     expect(registerToken).toHaveBeenCalledWith("u1", "tok-xyz");
   });
+
+  it("does not store a token when permission is denied", async () => {
+    vi.stubGlobal("Notification", { permission: "default", requestPermission: vi.fn().mockResolvedValue("denied") });
+    const { result } = renderHook(() => usePushNotifications());
+    await waitFor(() => expect(result.current.status).toBe("default"));
+    await act(async () => { await result.current.enable(); });
+    expect(registerToken).not.toHaveBeenCalled();
+    expect(result.current.status).toBe("denied");
+  });
 });

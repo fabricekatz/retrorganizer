@@ -6,7 +6,7 @@ import { useAuth } from "../auth/AuthProvider";
 
 type Status = "unsupported" | "default" | "granted" | "denied";
 
-const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY as string | undefined;
+const VAPID_KEY: string | undefined = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
 export interface UsePushNotifications {
   status: Status;
