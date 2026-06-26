@@ -24,6 +24,7 @@ export const taskSchema = z.object({
   eventId: z.string().nullable().default(null),
   categoryId: z.string().nullable().default(null),
   tags: z.array(z.string()).default([]),
+  reminderOffsets: z.array(z.number()).default([]),
 });
 
 export type Task = z.infer<typeof taskSchema>;
@@ -45,13 +46,14 @@ export interface TaskDraft {
   eventId: string | null;
   categoryId: string | null;
   tags: string[];
+  reminderOffsets: number[];
 }
 
 export function emptyTaskDraft(): TaskDraft {
   return {
     title: "", description: "", priority: "normal", dueDate: null, status: "todo",
     completedAt: null, subtasks: [], recurrence: null, contactIds: [], eventId: null,
-    categoryId: null, tags: [],
+    categoryId: null, tags: [], reminderOffsets: [],
   };
 }
 
@@ -61,6 +63,6 @@ export function draftFromTask(t: Task): TaskDraft {
     status: t.status, completedAt: t.completedAt,
     subtasks: t.subtasks.map((s) => ({ ...s })),
     recurrence: t.recurrence, contactIds: [...t.contactIds], eventId: t.eventId,
-    categoryId: t.categoryId, tags: [...t.tags],
+    categoryId: t.categoryId, tags: [...t.tags], reminderOffsets: [...t.reminderOffsets],
   };
 }

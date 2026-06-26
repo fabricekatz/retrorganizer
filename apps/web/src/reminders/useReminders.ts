@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { computeDueReminders, reminderKey, type ReminderHit } from "@retrorganizer/core";
+import { computeDueReminders, computeDueTaskReminders, reminderKey, type ReminderHit } from "@retrorganizer/core";
 import { useEvents } from "../calendar/useEvents";
+import { useTasks } from "../tasks/useTasks";
 
 const TICK_MS = 60 * 1000;
 
@@ -13,6 +14,9 @@ export function useReminders(): UseReminders {
   const { events } = useEvents();
   const eventsRef = useRef(events);
   eventsRef.current = events;
+  const { tasks } = useTasks();
+  const tasksRef = useRef(tasks);
+  tasksRef.current = tasks;
   const lastCheck = useRef<number>(0);
   const [due, setDue] = useState<ReminderHit[]>([]);
 
@@ -23,13 +27,16 @@ export function useReminders(): UseReminders {
     }
     const interval = setInterval(() => {
       const now = Date.now();
-      const hits = computeDueReminders(eventsRef.current, lastCheck.current, now);
+      const hits = [
+        ...computeDueReminders(eventsRef.current, lastCheck.current, now),
+        ...computeDueTaskReminders(tasksRef.current, lastCheck.current, now),
+      ];
       lastCheck.current = now;
       if (hits.length === 0) return;
       setDue((prev) => [...prev, ...hits]);
       if (typeof Notification !== "undefined" && Notification.permission === "granted") {
         for (const h of hits) {
-          new Notification(h.title, { body: "Rappel d'événement" });
+          new Notification(h.title, { body: h.type === "task" ? "Rappel de tâche" : "Rappel d'événement" });
         }
       }
     }, TICK_MS);

@@ -14,7 +14,7 @@ export function ReminderHost() {
             borderLeft: `4px solid ${tokens.color.ink}`, borderRadius: tokens.radius.sm,
             padding: tokens.space.sm, font: `13px ${tokens.font.body}`, boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
             display: "flex", justifyContent: "space-between", alignItems: "center", gap: tokens.space.sm }}>
-          <span><strong>Rappel</strong> — <span>{item.title}</span></span>
+          <span><strong>{item.type === "task" ? "Rappel de tâche" : "Rappel"}</strong> — <span>{item.title}</span></span>
           <button type="button" aria-label="Fermer le rappel" onClick={() => dismiss(reminderKey(item))}>×</button>
         </div>
       ))}

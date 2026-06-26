@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { computeDueReminders, reminderKey } from "./dueReminders";
+import { computeDueReminders, reminderKey, computeDueTaskReminders } from "./dueReminders";
 import { parseEvent, type Event } from "../domain/event";
+import { parseTask, type Task } from "../domain/task";
 
 const T = Date.UTC(2026, 0, 5, 9, 0, 0); // event start
 const MIN = 60000;
@@ -43,5 +44,35 @@ describe("computeDueReminders", () => {
     const hits = computeDueReminders([e], T - 60 * MIN - 1, T - 10 * MIN);
     const keys = hits.map(reminderKey);
     expect(new Set(keys).size).toBe(keys.length);
+  });
+});
+
+const DUE = Date.UTC(2026, 0, 10, 0, 0, 0); // task due (local-midnight-like instant for the test)
+const DAY = 24 * 60 * 60000;
+
+function mkTask(extra: Partial<Task> = {}): Task {
+  return parseTask({ id: "t1", ownerId: "u1", createdAt: 1, updatedAt: 1, deletedAt: null, title: "Rapport", dueDate: DUE, ...extra });
+}
+
+describe("computeDueTaskReminders", () => {
+  it("fires offset minutes before the due date, inside the window", () => {
+    const t = mkTask({ reminderOffsets: [1440] }); // 1 day before
+    const hits = computeDueTaskReminders([t], DUE - DAY - 1, DUE - DAY);
+    expect(hits).toHaveLength(1);
+    expect(hits[0]!.type).toBe("task");
+    expect(hits[0]!.fireAt).toBe(DUE - DAY);
+    expect(hits[0]!.entityId).toBe("t1");
+    expect(hits[0]!.occurrenceStart).toBe(DUE);
+  });
+
+  it("ignores tasks with no due date, no offsets, or status done", () => {
+    expect(computeDueTaskReminders([mkTask({ reminderOffsets: [] })], DUE - DAY - 1, DUE)).toEqual([]);
+    expect(computeDueTaskReminders([mkTask({ dueDate: null, reminderOffsets: [1440] })], DUE - DAY - 1, DUE)).toEqual([]);
+    expect(computeDueTaskReminders([mkTask({ reminderOffsets: [1440], status: "done" })], DUE - DAY - 1, DUE)).toEqual([]);
+  });
+
+  it("excludes a fire time at or before the window start", () => {
+    const t = mkTask({ reminderOffsets: [1440] });
+    expect(computeDueTaskReminders([t], DUE - DAY, DUE)).toEqual([]); // fireAt == fromMs → excluded
   });
 });

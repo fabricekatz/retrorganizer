@@ -20,7 +20,7 @@ vi.mock("../auth/AuthProvider", () => ({ useAuth: () => ({ user: mockUser }) }))
 beforeEach(() => {
   mockUser = { uid: "u1", email: "a@x.io" };
   listByOwner.mockReset().mockResolvedValue([
-    { id: "t1", ownerId: "u1", title: "X", description: "", priority: "normal", dueDate: null, status: "todo", completedAt: null, subtasks: [], recurrence: null, contactIds: [], eventId: null, categoryId: null, tags: [], createdAt: 1, updatedAt: 1, deletedAt: null },
+    { id: "t1", ownerId: "u1", title: "X", description: "", priority: "normal", dueDate: null, status: "todo", completedAt: null, subtasks: [], recurrence: null, contactIds: [], eventId: null, categoryId: null, tags: [], reminderOffsets: [], createdAt: 1, updatedAt: 1, deletedAt: null },
   ]);
   create.mockReset().mockResolvedValue(undefined);
   update.mockReset().mockResolvedValue(undefined);

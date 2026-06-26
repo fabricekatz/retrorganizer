@@ -59,7 +59,7 @@ beforeEach(() => {
   categoriesHardDelete.mockReset().mockResolvedValue(undefined);
 
   contactsListDeletedByOwner.mockResolvedValue([{ id: "c1", ...base, displayName: "Ada", firstName: "", lastName: "", organization: "", emails: [], phones: [], addresses: [], webLinks: [], importantDates: [], customFields: [], categoryId: null, tags: [] }]);
-  tasksListDeletedByOwner.mockResolvedValue([{ id: "t1", ...base, title: "Vieille tâche", description: "", priority: "normal", dueDate: null, status: "todo", completedAt: null, subtasks: [], recurrence: null, contactIds: [], eventId: null, categoryId: null, tags: [] }]);
+  tasksListDeletedByOwner.mockResolvedValue([{ id: "t1", ...base, title: "Vieille tâche", description: "", priority: "normal", dueDate: null, status: "todo", completedAt: null, subtasks: [], recurrence: null, contactIds: [], eventId: null, categoryId: null, tags: [], reminderOffsets: [] }]);
 });
 
 describe("useTrash", () => {
