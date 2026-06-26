@@ -28,7 +28,7 @@ describe("GlobalSearchBar", () => {
     mockResults = [{ id: "contact:c1", type: "contact", entityId: "c1", title: "Ada Lovelace", path: "/address" }];
     render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><GlobalSearchBar /></MemoryRouter>);
     fireEvent.click(screen.getByRole("button", { name: /Ada Lovelace/ }));
-    expect(navigate).toHaveBeenCalledWith("/address");
+    expect(navigate).toHaveBeenCalledWith("/address?focus=c1");
     expect(setQuery).toHaveBeenCalledWith("");
   });
 });

@@ -11,8 +11,8 @@ export function GlobalSearchBar() {
   const { query, setQuery, results } = useGlobalSearch();
   const navigate = useNavigate();
 
-  function pick(path: string) {
-    navigate(path);
+  function pick(r: { path: string; entityId: string }) {
+    navigate(`${r.path}?focus=${r.entityId}`);
     setQuery("");
   }
 
@@ -31,7 +31,7 @@ export function GlobalSearchBar() {
           maxHeight: 280, overflow: "auto" }}>
           {results.slice(0, 20).map((r) => (
             <li key={r.id}>
-              <button type="button" onClick={() => pick(r.path)}
+              <button type="button" onClick={() => pick(r)}
                 style={{ display: "flex", gap: tokens.space.sm, width: "100%", textAlign: "left", border: "none",
                   borderBottom: `1px solid ${tokens.color.line}`, background: "transparent", cursor: "pointer",
                   padding: tokens.space.xs, color: tokens.color.ink, font: `12px ${tokens.font.body}` }}>
