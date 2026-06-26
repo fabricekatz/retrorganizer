@@ -20,6 +20,11 @@ vi.mock("./reminders/ReminderHost", () => ({
   ReminderHost: () => <div data-testid="reminder-host" />,
 }));
 
+vi.mock("./calendar/useEvents", () => ({
+  EventsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useEvents: () => ({ events: [], loading: false, error: null, create: vi.fn(), update: vi.fn(), remove: vi.fn(), reload: vi.fn() }),
+}));
+
 describe("App", () => {
   it("renders the 8 section tabs for an authenticated user", async () => {
     render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={["/diary"]}><App /></MemoryRouter>);

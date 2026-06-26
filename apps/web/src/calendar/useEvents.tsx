@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { eventsRepo, type Event, type EventDraft } from "@retrorganizer/core";
 import { useAuth } from "../auth/AuthProvider";
 
@@ -12,7 +12,7 @@ export interface UseEvents {
   reload(): Promise<void>;
 }
 
-export function useEvents(): UseEvents {
+function useEventsState(): UseEvents {
   const { user } = useAuth();
   const uid = user?.uid ?? null;
   const [events, setEvents] = useState<Event[]>([]);
@@ -54,4 +54,17 @@ export function useEvents(): UseEvents {
   }, [reload]);
 
   return { events, loading, error, create, update, remove, reload };
+}
+
+const EventsContext = createContext<UseEvents | null>(null);
+
+export function EventsProvider({ children }: { children: ReactNode }) {
+  const value = useEventsState();
+  return <EventsContext.Provider value={value}>{children}</EventsContext.Provider>;
+}
+
+export function useEvents(): UseEvents {
+  const ctx = useContext(EventsContext);
+  if (ctx === null) throw new Error("useEvents must be used within an EventsProvider");
+  return ctx;
 }

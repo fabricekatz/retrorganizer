@@ -11,6 +11,7 @@ import { TrashPanel } from "./trash/TrashPanel";
 import { CategoryManager } from "./categories/CategoryManager";
 import { ReminderHost } from "./reminders/ReminderHost";
 import { ChunkErrorBoundary } from "./ChunkErrorBoundary";
+import { EventsProvider } from "./calendar/useEvents";
 
 const ContactsModule = lazy(() => import("./contacts/ContactsModule").then((m) => ({ default: m.ContactsModule })));
 const CalendarModule = lazy(() => import("./calendar/CalendarModule").then((m) => ({ default: m.CalendarModule })));
@@ -28,6 +29,7 @@ export function App() {
   if (!user) return <LoginScreen />;
 
   return (
+    <EventsProvider>
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: tokens.color.paper }}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: `${tokens.space.xs}px ${tokens.space.md}px`, borderBottom: `1px solid ${tokens.color.line}`,
@@ -80,5 +82,6 @@ export function App() {
         </main>
       </div>
     </div>
+    </EventsProvider>
   );
 }
