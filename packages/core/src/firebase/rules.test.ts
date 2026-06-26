@@ -38,4 +38,14 @@ describe("firestore rules", () => {
     const db = env.authenticatedContext("intruder").firestore();
     await assertFails(getDoc(doc(db, "contacts/c2")));
   });
+
+  it("lets a user create their own fcmToken", async () => {
+    const db = env.authenticatedContext("u1").firestore();
+    await assertSucceeds(setDoc(doc(db, "fcmTokens/tok1"), { id: "tok1", ownerId: "u1", createdAt: 1, updatedAt: 1 }));
+  });
+
+  it("forbids creating an fcmToken owned by someone else", async () => {
+    const db = env.authenticatedContext("u1").firestore();
+    await assertFails(setDoc(doc(db, "fcmTokens/tok2"), { id: "tok2", ownerId: "u2", createdAt: 1, updatedAt: 1 }));
+  });
 });

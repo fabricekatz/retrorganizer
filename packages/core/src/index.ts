@@ -23,3 +23,5 @@ export * from "./io/csv";
 export * from "./io/ics";
 export * from "./search/globalSearch";
 export * from "./reminders/dueReminders";
+export * from "./domain/fcmToken";
+export * from "./repositories/fcmTokens";

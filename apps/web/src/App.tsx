@@ -10,6 +10,7 @@ import { GlobalSearchBar } from "./search/GlobalSearchBar";
 import { TrashPanel } from "./trash/TrashPanel";
 import { CategoryManager } from "./categories/CategoryManager";
 import { ReminderHost } from "./reminders/ReminderHost";
+import { PushOptIn } from "./notifications/PushOptIn";
 import { ChunkErrorBoundary } from "./ChunkErrorBoundary";
 import { EventsProvider } from "./calendar/useEvents";
 
@@ -36,6 +37,7 @@ export function App() {
         font: `13px ${tokens.font.body}` }}>
         <strong style={{ color: tokens.color.ink }}>Retrorganizer</strong>
         <GlobalSearchBar />
+        <PushOptIn />
         <button type="button" onClick={() => setCategoriesOpen((o) => !o)}>Catégories</button>
         <button type="button" onClick={() => setTrashOpen((o) => !o)}>Corbeille</button>
         <button onClick={() => signOut()}>Déconnexion</button>
