@@ -16,8 +16,11 @@ export function useFocusParam<T extends { id: string }>(
     if (focus === null || loading) return;
     const entity = entities.find((e) => e.id === focus);
     if (entity) onFocus(entity);
-    const next = new URLSearchParams(params);
-    next.delete("focus");
-    setParams(next, { replace: true });
+    setParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete("focus");
+      return next;
+    }, { replace: true });
   }, [focus, loading, entities]); // params/setParams/onFocus intentionally excluded — focus drives re-runs
+  // Contract: onFocus is invoked once when focus is set; callers needn't memoize it.
 }
