@@ -7,6 +7,7 @@ import {
 } from "@retrorganizer/core";
 import { useEvents } from "./useEvents";
 import { useCategories } from "../categories/useCategories";
+import { useFocusParam } from "../search/useFocusParam";
 import { MonthView } from "./MonthView";
 import { AgendaView } from "./AgendaView";
 import { TimeGridView } from "./TimeGridView";
@@ -58,6 +59,8 @@ export function CalendarModule({ initialAnchor }: CalendarModuleProps) {
     () => expandEvents(events, rangeStart, rangeEnd),
     [events, rangeStart, rangeEnd],
   );
+
+  useFocusParam(events, loading, (ev) => setEditing({ draft: draftFromEvent(ev), id: ev.id }));
 
   function newOnDay(dayStartMs: number) {
     const start = dayStartMs + 9 * 3600000;

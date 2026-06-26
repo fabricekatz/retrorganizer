@@ -6,6 +6,7 @@ import {
 } from "@retrorganizer/core";
 import { useContacts } from "./useContacts";
 import { useCategories } from "../categories/useCategories";
+import { useFocusParam } from "../search/useFocusParam";
 import { ContactList, type SortKey } from "./ContactList";
 import { ContactForm } from "./ContactForm";
 import { ImportExportBar } from "./ImportExportBar";
@@ -22,6 +23,8 @@ export function ContactsModule() {
     () => sortContacts(filterContacts(contacts, query), sortKey),
     [contacts, query, sortKey],
   );
+
+  useFocusParam(contacts, loading, (c) => { setSelected(c); setMode("edit"); });
 
   async function onSubmit(draft: ContactDraft) {
     if (selected) await update(selected.id, draft);

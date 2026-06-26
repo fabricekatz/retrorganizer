@@ -6,6 +6,7 @@ import {
 } from "@retrorganizer/core";
 import { useTasks } from "./useTasks";
 import { useCategories } from "../categories/useCategories";
+import { useFocusParam } from "../search/useFocusParam";
 import { TaskList, type StatusFilter, type TaskSortKey } from "./TaskList";
 import { TaskForm } from "./TaskForm";
 
@@ -21,6 +22,8 @@ export function TasksModule() {
     () => sortTasks(filterTasks(tasks, { status: statusFilter, search }), sortKey),
     [tasks, statusFilter, search, sortKey],
   );
+
+  useFocusParam(tasks, loading, (t) => setEditing({ draft: draftFromTask(t), id: t.id }));
 
   async function onSubmit(draft: TaskDraft) {
     if (editing?.id) await update(editing.id, draft);
