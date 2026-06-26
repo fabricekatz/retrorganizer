@@ -18,3 +18,8 @@ jobs:
       - run: pnpm typecheck
       - name: Run tests (with Firestore emulator)
         run: pnpm exec firebase emulators:exec --only auth,firestore "pnpm test"
+      - name: Run DST recurrence tests in a DST timezone
+        # The runner defaults to UTC, where the DST test is a no-op. Force a
+        # DST timezone so a regression to UTC-anchored recurrence fails here.
+        env: { TZ: Europe/Paris }
+        run: pnpm --filter @retrorganizer/core test -- recurrenceDst
