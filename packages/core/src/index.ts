@@ -6,6 +6,7 @@ export * from "./domain/contactQuery";
 export * from "./domain/event";
 export * from "./domain/recurrence";
 export * from "./domain/calendarGrid";
+export * from "./domain/plannerGrid";
 export * from "./domain/task";
 export * from "./domain/taskQuery";
 export * from "./domain/note";
