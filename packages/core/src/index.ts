@@ -13,6 +13,8 @@ export * from "./domain/taskQuery";
 export * from "./domain/note";
 export * from "./domain/bookmark";
 export * from "./domain/bookmarkQuery";
+export * from "./domain/call";
+export * from "./domain/callQuery";
 export * from "./firebase/app";
 export * from "./repositories/base";
 export * from "./repositories/categories";
