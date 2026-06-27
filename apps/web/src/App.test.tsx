@@ -12,6 +12,11 @@ vi.mock("./calendar/Diary", () => ({
   Diary: () => <div data-testid="diary" />,
 }));
 
+vi.mock("./planner/Planner", () => ({ Planner: () => <div data-testid="planner" /> }));
+vi.mock("./anniversary/Anniversary", () => ({ Anniversary: () => <div data-testid="anniversary" /> }));
+vi.mock("./bookmarks/WebLinks", () => ({ WebLinks: () => <div data-testid="web" /> }));
+vi.mock("./calls/CallLog", () => ({ CallLog: () => <div data-testid="calls" /> }));
+
 vi.mock("./search/GlobalSearchBar", () => ({
   GlobalSearchBar: () => <div data-testid="global-search" />,
 }));
