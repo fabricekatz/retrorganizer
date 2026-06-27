@@ -65,13 +65,20 @@ export function DiaryWeek() {
   const monthLabel = new Date(weekStart).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }).toUpperCase();
   const range = `${new Date(weekStart).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} – ${new Date(days[6]!).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}`;
 
-  function Day({ dayMs, small }: { dayMs: number; small?: boolean }) {
+  function Day({ dayMs, small, grow }: { dayMs: number; small?: boolean; grow?: boolean }) {
     const occs = dayOccs(dayMs);
     const isToday = dayMs === today;
     const d = new Date(dayMs);
     const label = `${DOW[(d.getDay() + 6) % 7]} ${d.getDate()}`;
     return (
-      <div className={isToday ? "relative bg-tertiary-fixed/30 border border-tertiary-fixed-dim/60 p-2 rounded-sm" : "border-b border-outline-variant pb-2"}>
+      <div
+        className={[
+          grow ? "flex-1 min-h-0 flex flex-col" : "",
+          isToday
+            ? "relative bg-tertiary-fixed/30 border border-tertiary-fixed-dim/60 p-2 rounded-sm"
+            : "border-b border-outline-variant pb-2",
+        ].join(" ")}
+      >
         {isToday && (
           <div className="absolute left-[-8px] right-1 top-8 h-0.5 bg-error z-10">
             <div className="w-2 h-2 -mt-[3px] -ml-1 rounded-full bg-error" />
@@ -108,8 +115,8 @@ export function DiaryWeek() {
   }
 
   return (
-    <div className="font-body-md text-on-surface">
-      <div className="flex justify-between items-end border-b-2 border-primary mb-4 pb-1">
+    <div className="flex flex-col min-h-full font-body-md text-on-surface">
+      <div className="shrink-0 flex justify-between items-end border-b-2 border-primary mb-4 pb-1">
         <div>
           <p className="font-label-sm text-label-sm text-primary uppercase">{monthLabel}</p>
           <h2 className="font-headline-lg text-headline-lg text-on-surface -mt-1">{range}</h2>
@@ -119,18 +126,18 @@ export function DiaryWeek() {
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-4">
-          <Day dayMs={days[0]!} />
-          <Day dayMs={days[1]!} />
-          <Day dayMs={days[2]!} />
+      <div className="grid grid-cols-2 gap-4 flex-1 min-h-0">
+        <div className="flex flex-col gap-3">
+          <Day dayMs={days[0]!} grow />
+          <Day dayMs={days[1]!} grow />
+          <Day dayMs={days[2]!} grow />
         </div>
-        <div className="space-y-4">
-          <Day dayMs={days[3]!} />
-          <Day dayMs={days[4]!} />
-          <div className="grid grid-cols-2 gap-2">
-            <Day dayMs={days[5]!} small />
-            <Day dayMs={days[6]!} small />
+        <div className="flex flex-col gap-3">
+          <Day dayMs={days[3]!} grow />
+          <Day dayMs={days[4]!} grow />
+          <div className="grid grid-cols-2 gap-2 flex-1 min-h-0">
+            <Day dayMs={days[5]!} small grow />
+            <Day dayMs={days[6]!} small grow />
           </div>
         </div>
       </div>
