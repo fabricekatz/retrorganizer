@@ -14,7 +14,7 @@ import { PushOptIn } from "./notifications/PushOptIn";
 import { ChunkErrorBoundary } from "./ChunkErrorBoundary";
 import { EventsProvider } from "./calendar/useEvents";
 
-const ContactsModule = lazy(() => import("./contacts/ContactsModule").then((m) => ({ default: m.ContactsModule })));
+const AddressBook = lazy(() => import("./contacts/AddressBook").then((m) => ({ default: m.AddressBook })));
 const DiaryWeek = lazy(() => import("./calendar/DiaryWeek").then((m) => ({ default: m.DiaryWeek })));
 const TodoList = lazy(() => import("./tasks/TodoList").then((m) => ({ default: m.TodoList })));
 const NotesModule = lazy(() => import("./notes/NotesModule").then((m) => ({ default: m.NotesModule })));
@@ -136,7 +136,7 @@ export function App() {
                             : s.id === "todo"
                               ? <TodoList />
                               : s.id === "address"
-                                ? <ContactsModule />
+                                ? <AddressBook />
                                 : s.id === "notepad"
                                   ? <NotesModule />
                                   : s.mvp
