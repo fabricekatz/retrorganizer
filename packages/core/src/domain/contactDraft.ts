@@ -7,6 +7,7 @@ export interface ContactDraft {
   displayName: string;
   organization: string;
   title: string;
+  photoUrl?: string;
   phones: LabeledValue[];
   emails: LabeledValue[];
   addresses: PostalAddress[];
@@ -33,6 +34,7 @@ export function draftFromContact(c: Contact): ContactDraft {
     displayName: c.displayName,
     organization: c.organization ?? "",
     title: c.title ?? "",
+    photoUrl: c.photoUrl,
     phones: c.phones.map((p) => ({ ...p })),
     emails: c.emails.map((p) => ({ ...p })),
     addresses: c.addresses.map((a) => ({ ...a })),

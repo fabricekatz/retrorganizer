@@ -27,6 +27,11 @@ describe("contactDraft", () => {
     expect(sample.phones[0]!.value).toBe("+33 1");
   });
 
+  it("draftFromContact carries an optional photoUrl through", () => {
+    expect(draftFromContact(sample).photoUrl).toBeUndefined();
+    expect(draftFromContact({ ...sample, photoUrl: "data:image/jpeg;base64,xyz" }).photoUrl).toBe("data:image/jpeg;base64,xyz");
+  });
+
   it("withDisplayName fills from first+last when empty", () => {
     const d = withDisplayName({ ...emptyDraft(), firstName: "Ada", lastName: "Lovelace" });
     expect(d.displayName).toBe("Ada Lovelace");

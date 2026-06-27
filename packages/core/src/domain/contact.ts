@@ -22,6 +22,7 @@ export const contactSchema = z.object({
   displayName: z.string().min(1),
   organization: z.string().optional(),
   title: z.string().optional(),
+  photoUrl: z.string().optional(), // small resized thumbnail (data URL) or external URL
   phones: z.array(labeledValue).default([]),
   emails: z.array(labeledValue).default([]),
   addresses: z.array(postalAddress).default([]),
