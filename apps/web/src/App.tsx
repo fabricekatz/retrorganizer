@@ -16,7 +16,7 @@ import { EventsProvider } from "./calendar/useEvents";
 
 const ContactsModule = lazy(() => import("./contacts/ContactsModule").then((m) => ({ default: m.ContactsModule })));
 const DiaryWeek = lazy(() => import("./calendar/DiaryWeek").then((m) => ({ default: m.DiaryWeek })));
-const TasksModule = lazy(() => import("./tasks/TasksModule").then((m) => ({ default: m.TasksModule })));
+const TodoList = lazy(() => import("./tasks/TodoList").then((m) => ({ default: m.TodoList })));
 const NotesModule = lazy(() => import("./notes/NotesModule").then((m) => ({ default: m.NotesModule })));
 
 const TAB_ICON: Record<SectionId, string> = {
@@ -45,7 +45,7 @@ const TAB_BG: Record<SectionId, string> = {
 // Screen title shown in the app bar (falls back to the tab label).
 const SCREEN_TITLE: Partial<Record<SectionId, string>> = {
   diary: "Weekly Planner",
-  todo: "To-Do List",
+  todo: "Daily Planner",
   address: "Address Book",
   notepad: "Notepad",
 };
@@ -134,7 +134,7 @@ export function App() {
                           s.id === "diary"
                             ? <DiaryWeek />
                             : s.id === "todo"
-                              ? <TasksModule />
+                              ? <TodoList />
                               : s.id === "address"
                                 ? <ContactsModule />
                                 : s.id === "notepad"
