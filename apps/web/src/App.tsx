@@ -21,6 +21,7 @@ const NotePad = lazy(() => import("./notes/NotePad").then((m) => ({ default: m.N
 const Planner = lazy(() => import("./planner/Planner").then((m) => ({ default: m.Planner })));
 const Anniversary = lazy(() => import("./anniversary/Anniversary").then((m) => ({ default: m.Anniversary })));
 const WebLinks = lazy(() => import("./bookmarks/WebLinks").then((m) => ({ default: m.WebLinks })));
+const CallLog = lazy(() => import("./calls/CallLog").then((m) => ({ default: m.CallLog })));
 
 const TAB_ICON: Record<SectionId, string> = {
   diary: "event",
@@ -54,6 +55,7 @@ const SCREEN_TITLE: Partial<Record<SectionId, string>> = {
   planner: "Planner",
   anniversary: "Anniversaires",
   web: "Liens web",
+  calls: "Journal d'appels",
 };
 
 function Icon({ name, className }: { name: string; className?: string }) {
@@ -151,7 +153,9 @@ export function App() {
                                       ? <Anniversary />
                                       : s.id === "web"
                                         ? <WebLinks />
-                                        : s.mvp
+                                        : s.id === "calls"
+                                          ? <CallLog />
+                                          : s.mvp
                                     ? <SectionPlaceholder label={s.label} />
                                     : <ComingSoon label={s.label} />
                         }
