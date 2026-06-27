@@ -21,6 +21,7 @@ export * from "./repositories/contacts";
 export * from "./repositories/events";
 export * from "./repositories/tasks";
 export * from "./repositories/notes";
+export * from "./repositories/bookmarks";
 export * from "./repositories/noteSections";
 export * from "./io/vcard";
 export * from "./io/csv";
