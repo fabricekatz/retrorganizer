@@ -13,6 +13,7 @@ vi.mock("./calendar/Diary", () => ({
 }));
 
 vi.mock("./planner/Planner", () => ({ Planner: () => <div data-testid="planner" /> }));
+vi.mock("./anniversary/Anniversary", () => ({ Anniversary: () => <div data-testid="anniversary" /> }));
 
 vi.mock("./search/GlobalSearchBar", () => ({
   GlobalSearchBar: () => <div data-testid="global-search" />,
