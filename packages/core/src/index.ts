@@ -11,6 +11,8 @@ export * from "./domain/anniversary";
 export * from "./domain/task";
 export * from "./domain/taskQuery";
 export * from "./domain/note";
+export * from "./domain/bookmark";
+export * from "./domain/bookmarkQuery";
 export * from "./firebase/app";
 export * from "./repositories/base";
 export * from "./repositories/categories";
