@@ -15,7 +15,7 @@ import { ChunkErrorBoundary } from "./ChunkErrorBoundary";
 import { EventsProvider } from "./calendar/useEvents";
 
 const AddressBook = lazy(() => import("./contacts/AddressBook").then((m) => ({ default: m.AddressBook })));
-const DiaryWeek = lazy(() => import("./calendar/DiaryWeek").then((m) => ({ default: m.DiaryWeek })));
+const Diary = lazy(() => import("./calendar/Diary").then((m) => ({ default: m.Diary })));
 const TodoList = lazy(() => import("./tasks/TodoList").then((m) => ({ default: m.TodoList })));
 const NotePad = lazy(() => import("./notes/NotePad").then((m) => ({ default: m.NotePad })));
 
@@ -44,7 +44,7 @@ const TAB_BG: Record<SectionId, string> = {
 
 // Screen title shown in the app bar (falls back to the tab label).
 const SCREEN_TITLE: Partial<Record<SectionId, string>> = {
-  diary: "Weekly Planner",
+  diary: "Agenda",
   todo: "Daily Planner",
   address: "Address Book",
   notepad: "Notepad",
@@ -132,7 +132,7 @@ export function App() {
                         path={s.path}
                         element={
                           s.id === "diary"
-                            ? <DiaryWeek />
+                            ? <Diary />
                             : s.id === "todo"
                               ? <TodoList />
                               : s.id === "address"

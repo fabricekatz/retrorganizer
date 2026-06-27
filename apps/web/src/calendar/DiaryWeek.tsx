@@ -1,30 +1,15 @@
-import { useMemo, useState } from "react";
-import {
-  expandEvents, weekDays, startOfDay, addDays, sameDay,
-  draftFromEvent, emptyEventDraft, type EventDraft, type Occurrence,
-} from "@retrorganizer/core";
-import { useEvents } from "./useEvents";
-import { EventForm } from "./EventForm";
+import { useMemo } from "react";
+import { expandEvents, weekDays, startOfDay, addDays, sameDay, type Event, type Occurrence } from "@retrorganizer/core";
+import { DOW, isoWeek } from "./diaryUtil";
 
-const DOW = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
-
-function isoWeek(ms: number): number {
-  const d = new Date(startOfDay(ms));
-  const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const dayNr = (target.getUTCDay() + 6) % 7;
-  target.setUTCDate(target.getUTCDate() - dayNr + 3);
-  const firstThursday = Date.UTC(target.getUTCFullYear(), 0, 4);
-  const ftDayNr = (new Date(firstThursday).getUTCDay() + 6) % 7;
-  const week1Monday = firstThursday - ftDayNr * 86400000;
-  return 1 + Math.round((target.getTime() - week1Monday) / (7 * 86400000));
+export interface DiaryWeekProps {
+  events: Event[];
+  onOpenDay(dayMs: number): void;
+  onOpenEdit(o: Occurrence): void;
 }
 
-export function DiaryWeek() {
-  const { events, create, update, remove } = useEvents();
-  const [editing, setEditing] = useState<{ draft: EventDraft; id: string | null } | null>(null);
-  const [anchor] = useState(() => Date.now());
-
-  const days = useMemo(() => weekDays(anchor), [anchor]);
+export function DiaryWeek({ events, onOpenDay, onOpenEdit }: DiaryWeekProps) {
+  const days = useMemo(() => weekDays(Date.now()), []);
   const weekStart = days[0]!;
   const weekEndExclusive = addDays(days[6]!, 1);
   const occurrences = useMemo(
@@ -35,31 +20,6 @@ export function DiaryWeek() {
 
   function dayOccs(dayMs: number): Occurrence[] {
     return occurrences.filter((o) => sameDay(o.start, dayMs)).sort((a, b) => a.start - b.start);
-  }
-  function openNew(dayMs: number) {
-    const start = dayMs + 9 * 3600000;
-    setEditing({ draft: { ...emptyEventDraft(), start, end: start + 3600000 }, id: null });
-  }
-  function openEdit(o: Occurrence) {
-    setEditing({ draft: draftFromEvent(o.event), id: o.event.id });
-  }
-  async function onSubmit(draft: EventDraft) {
-    if (editing?.id) await update(editing.id, draft);
-    else await create(draft);
-    setEditing(null);
-  }
-
-  if (editing) {
-    return (
-      <div className="legacy-content">
-        <EventForm initial={editing.draft} onSubmit={onSubmit} onCancel={() => setEditing(null)} />
-        {editing.id && (
-          <button type="button" style={{ margin: 12 }} onClick={async () => { await remove(editing.id!); setEditing(null); }}>
-            Supprimer
-          </button>
-        )}
-      </div>
-    );
   }
 
   const monthLabel = new Date(weekStart).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }).toUpperCase();
@@ -86,8 +46,8 @@ export function DiaryWeek() {
         )}
         <button
           type="button"
-          onClick={() => openNew(dayMs)}
-          title="Ajouter un événement"
+          onClick={() => onOpenDay(dayMs)}
+          title="Ouvrir le jour"
           className={`block font-label-sm text-label-sm uppercase mb-1 ${isToday ? "text-tertiary font-bold" : "text-primary"}`}
         >
           {label}{isToday ? " (Today)" : ""}
@@ -100,7 +60,7 @@ export function DiaryWeek() {
               <li key={`${o.event.id}-${o.start}`}>
                 <button
                   type="button"
-                  onClick={() => openEdit(o)}
+                  onClick={() => onOpenEdit(o)}
                   className={`flex items-center gap-2 text-body-md text-left w-full ${isToday && i === 0 ? "font-bold" : ""}`}
                 >
                   <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: o.event.color || "#c3c6d2" }} />
@@ -115,7 +75,7 @@ export function DiaryWeek() {
   }
 
   return (
-    <div className="flex flex-col min-h-full font-body-md text-on-surface">
+    <div className="flex-1 min-h-0 flex flex-col font-body-md text-on-surface">
       <div className="shrink-0 flex justify-between items-end border-b-2 border-primary mb-4 pb-1">
         <div>
           <p className="font-label-sm text-label-sm text-primary uppercase">{monthLabel}</p>
