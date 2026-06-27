@@ -17,7 +17,7 @@ import { EventsProvider } from "./calendar/useEvents";
 const AddressBook = lazy(() => import("./contacts/AddressBook").then((m) => ({ default: m.AddressBook })));
 const DiaryWeek = lazy(() => import("./calendar/DiaryWeek").then((m) => ({ default: m.DiaryWeek })));
 const TodoList = lazy(() => import("./tasks/TodoList").then((m) => ({ default: m.TodoList })));
-const NotesModule = lazy(() => import("./notes/NotesModule").then((m) => ({ default: m.NotesModule })));
+const NotePad = lazy(() => import("./notes/NotePad").then((m) => ({ default: m.NotePad })));
 
 const TAB_ICON: Record<SectionId, string> = {
   diary: "event",
@@ -138,7 +138,7 @@ export function App() {
                               : s.id === "address"
                                 ? <AddressBook />
                                 : s.id === "notepad"
-                                  ? <NotesModule />
+                                  ? <NotePad />
                                   : s.mvp
                                     ? <SectionPlaceholder label={s.label} />
                                     : <ComingSoon label={s.label} />
