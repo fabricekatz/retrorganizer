@@ -15,7 +15,7 @@ import { ChunkErrorBoundary } from "./ChunkErrorBoundary";
 import { EventsProvider } from "./calendar/useEvents";
 
 const ContactsModule = lazy(() => import("./contacts/ContactsModule").then((m) => ({ default: m.ContactsModule })));
-const CalendarModule = lazy(() => import("./calendar/CalendarModule").then((m) => ({ default: m.CalendarModule })));
+const DiaryWeek = lazy(() => import("./calendar/DiaryWeek").then((m) => ({ default: m.DiaryWeek })));
 const TasksModule = lazy(() => import("./tasks/TasksModule").then((m) => ({ default: m.TasksModule })));
 const NotesModule = lazy(() => import("./notes/NotesModule").then((m) => ({ default: m.NotesModule })));
 
@@ -28,6 +28,26 @@ const TAB_ICON: Record<SectionId, string> = {
   anniversary: "cake",
   web: "language",
   calls: "call",
+};
+
+// Per-tab pastel colours (Material-3 "fixed" tones, per Stitch).
+const TAB_BG: Record<SectionId, string> = {
+  diary: "bg-tertiary-fixed",
+  todo: "bg-secondary-container",
+  address: "bg-primary-fixed",
+  notepad: "bg-surface-variant",
+  planner: "bg-tertiary-fixed",
+  anniversary: "bg-secondary-container",
+  web: "bg-primary-fixed",
+  calls: "bg-surface-variant",
+};
+
+// Screen title shown in the app bar (falls back to the tab label).
+const SCREEN_TITLE: Partial<Record<SectionId, string>> = {
+  diary: "Weekly Planner",
+  todo: "To-Do List",
+  address: "Address Book",
+  notepad: "Notepad",
 };
 
 function Icon({ name, className }: { name: string; className?: string }) {
@@ -73,7 +93,7 @@ export function App() {
                 >
                   <Icon name="menu" />
                 </button>
-                <h1 className="font-headline-md text-headline-md text-on-surface truncate">{active.label}</h1>
+                <h1 className="font-headline-md text-headline-md text-on-surface truncate">{SCREEN_TITLE[active.id] ?? active.label}</h1>
               </div>
               <button
                 type="button"
@@ -112,7 +132,7 @@ export function App() {
                         path={s.path}
                         element={
                           s.id === "diary"
-                            ? <CalendarModule />
+                            ? <DiaryWeek />
                             : s.id === "todo"
                               ? <TasksModule />
                               : s.id === "address"
@@ -148,8 +168,8 @@ export function App() {
             </nav>
           </main>
 
-          {/* Right vertical tabs */}
-          <nav role="tablist" aria-orientation="vertical" className="w-12 sm:w-14 shrink-0 flex flex-col bg-surface-dim z-20">
+          {/* Right vertical tabs: top-aligned, per-tab pastel, active protrudes over the page */}
+          <nav role="tablist" aria-orientation="vertical" className="w-12 sm:w-14 shrink-0 flex flex-col gap-1 pt-3 bg-surface-dim">
             {SECTIONS.map((s) => {
               const isActive = location.pathname.startsWith(s.path);
               return (
@@ -159,10 +179,11 @@ export function App() {
                   aria-selected={isActive}
                   onClick={() => navigate(s.path)}
                   className={[
-                    "flex-1 min-h-0 flex flex-col items-center justify-center gap-1 border-y border-l-4 transition-colors",
+                    "h-[88px] flex flex-col items-center justify-center gap-1 border-y border-y-outline-variant transition-all",
+                    TAB_BG[s.id],
                     isActive
-                      ? "bg-tertiary-fixed border-l-primary text-primary"
-                      : "bg-secondary-container/60 border-l-transparent border-y-outline-variant text-on-surface-variant hover:bg-surface-container-high",
+                      ? "border-l-4 border-l-primary text-primary -ml-2 shadow-md relative z-30 rounded-l-md"
+                      : "border-l border-l-transparent text-on-surface-variant/70 hover:brightness-105",
                   ].join(" ")}
                 >
                   <Icon name={TAB_ICON[s.id]} className="text-[20px]" />

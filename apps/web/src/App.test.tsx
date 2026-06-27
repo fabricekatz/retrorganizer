@@ -8,8 +8,8 @@ vi.mock("./auth/AuthProvider", () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-vi.mock("./calendar/CalendarModule", () => ({
-  CalendarModule: () => <div data-testid="calendar-module" />,
+vi.mock("./calendar/DiaryWeek", () => ({
+  DiaryWeek: () => <div data-testid="diary-week" />,
 }));
 
 vi.mock("./search/GlobalSearchBar", () => ({
@@ -40,13 +40,13 @@ describe("App", () => {
     renderApp();
     expect(screen.getAllByRole("tab")).toHaveLength(8);
     expect(screen.getByRole("tab", { name: "Address" })).toBeInTheDocument();
-    await screen.findByTestId("calendar-module");
+    await screen.findByTestId("diary-week");
   });
 
   it("shows the active section title in the app bar", async () => {
     renderApp();
-    expect(screen.getByRole("heading", { name: "Diary" })).toBeInTheDocument();
-    await screen.findByTestId("calendar-module");
+    expect(screen.getByRole("heading", { name: "Weekly Planner" })).toBeInTheDocument();
+    await screen.findByTestId("diary-week");
   });
 
   it("exposes the bottom command nav and a menu with Corbeille", async () => {
@@ -54,6 +54,6 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Imprimer" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Menu" }));
     expect(screen.getByRole("button", { name: "Corbeille" })).toBeInTheDocument();
-    await screen.findByTestId("calendar-module");
+    await screen.findByTestId("diary-week");
   });
 });
