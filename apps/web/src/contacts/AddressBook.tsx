@@ -123,9 +123,18 @@ export function AddressBook() {
             return (
               <div key={c.id} className="border border-outline-variant p-3 bg-white/50">
                 <div className="flex justify-between items-start mb-2 gap-2">
-                  <button type="button" onClick={() => setEditing({ draft: draftFromContact(c), id: c.id })} className="text-left min-w-0">
-                    <div className="font-label-sm text-label-sm text-primary uppercase">Nom</div>
-                    <div className="font-headline-md text-headline-md leading-tight truncate">{displayedName(c)}</div>
+                  <button type="button" onClick={() => setEditing({ draft: draftFromContact(c), id: c.id })} className="flex items-center gap-3 text-left min-w-0">
+                    {c.photoUrl ? (
+                      <img src={c.photoUrl} alt="" className="w-12 h-12 object-cover border border-outline-variant shrink-0" />
+                    ) : (
+                      <div className="w-12 h-12 shrink-0 border border-outline-variant bg-surface-container flex items-center justify-center font-headline-md text-headline-md text-on-surface-variant">
+                        {displayedName(c).charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="font-label-sm text-label-sm text-primary uppercase">Nom</div>
+                      <div className="font-headline-md text-headline-md leading-tight truncate">{displayedName(c)}</div>
+                    </div>
                   </button>
                   <div className="flex gap-2 shrink-0">
                     {phone && (

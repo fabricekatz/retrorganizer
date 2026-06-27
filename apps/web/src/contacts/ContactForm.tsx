@@ -5,6 +5,7 @@ import { MultiValueField } from "./MultiValueField";
 import { AddressField } from "./AddressField";
 import { CategorySelect } from "../categories/CategorySelect";
 import { TagInput } from "../categories/TagInput";
+import { fileToThumbnail } from "./photo";
 
 export interface ContactFormProps {
   initial?: ContactDraft;
@@ -40,6 +41,28 @@ export function ContactForm({ initial, onSubmit, onCancel }: ContactFormProps) {
       {field("Nom affiché", "displayName")}
       {field("Organisation", "organization")}
       {field("Fonction", "title")}
+      <label style={{ display: "block", marginBottom: tokens.space.xs }}>
+        Photo
+        <div style={{ display: "flex", alignItems: "center", gap: tokens.space.sm, marginTop: 4 }}>
+          {draft.photoUrl ? (
+            <img src={draft.photoUrl} alt="" style={{ width: 48, height: 48, objectFit: "cover", border: `1px solid ${tokens.color.line}` }} />
+          ) : (
+            <div style={{ width: 48, height: 48, border: `1px solid ${tokens.color.line}`, display: "flex", alignItems: "center", justifyContent: "center", color: tokens.color.muted }}>—</div>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            aria-label="Photo du contact"
+            onChange={async (e) => {
+              const f = e.target.files?.[0];
+              if (f) set("photoUrl", await fileToThumbnail(f));
+            }}
+          />
+          {draft.photoUrl && (
+            <button type="button" onClick={() => set("photoUrl", undefined)}>Retirer</button>
+          )}
+        </div>
+      </label>
       <MultiValueField legend="Téléphone" valueLabel="numéro" rows={draft.phones}
         onChange={(rows) => set("phones", rows)} />
       <MultiValueField legend="Email" valueLabel="adresse" rows={draft.emails}
