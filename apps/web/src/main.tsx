@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import "./index.css";
 import { bootstrapFirebase } from "./firebaseConfig";
 import { AuthProvider } from "./auth/AuthProvider";
 import { App } from "./App";

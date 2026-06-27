@@ -19,6 +19,7 @@ export function GlobalSearchBar() {
   return (
     <div style={{ position: "relative", flex: 1, maxWidth: 360, margin: `0 ${tokens.space.md}px` }}>
       <input
+        id="global-search-input"
         aria-label="Recherche globale"
         placeholder="Rechercher partout…"
         value={query}

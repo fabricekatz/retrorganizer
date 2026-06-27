@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark dotted "desk" the binder sits on (Stitch). */
+body {
+  background-color: #5a5e6b;
+  background-image: radial-gradient(#4a4e5b 1px, transparent 1px);
+  background-size: 20px 20px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+}
+
+/* Cream ruled paper with a stacked-pages edge shadow. */
+.paper-texture {
+  background-color: #fffef2;
+  background-image: linear-gradient(rgba(186, 219, 255, 0.2) 1px, transparent 1px);
+  background-size: 100% 24px;
+  box-shadow:
+    -2px 0 0 #fffef2,
+    -4px 0 0 #ddd,
+    -6px 0 0 #fffef2,
+    -8px 0 0 #ccc;
+}
+
+/* Ring band inside the binder gutter. */
+.binder-rings {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 40px,
+    #999 40px,
+    #eee 45px,
+    #999 50px,
+    transparent 50px,
+    transparent 80px
+  );
+}
+
+/* Material Symbols icon defaults. */
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  vertical-align: middle;
+  user-select: none;
+}
+
+/* Vertical tab labels. */
+.tab-vert {
+  writing-mode: vertical-lr;
+}
+
+/* ---- Interim: restore sane control styling for module screens not yet
+   rebuilt in Tailwind (preflight strips default button/input chrome). These
+   get replaced screen-by-screen as their Stitch designs land. ---- */
+.legacy-content button {
+  border: 1px solid #b9b9c4;
+  background: #ececf2;
+  border-radius: 2px;
+  padding: 4px 10px;
+  font: 13px "IBM Plex Sans", system-ui, sans-serif;
+  color: #1a1c20;
+  cursor: pointer;
+}
+.legacy-content input,
+.legacy-content select,
+.legacy-content textarea {
+  border: 1px solid #b9b9c4;
+  background: #ffffff;
+  border-radius: 2px;
+  padding: 3px 6px;
+  font: 13px "IBM Plex Sans", system-ui, sans-serif;
+  color: #1a1c20;
+}
+.legacy-content input[type="checkbox"] {
+  width: auto;
+  border: 1px solid #737782;
+}
