@@ -18,6 +18,7 @@ const AddressBook = lazy(() => import("./contacts/AddressBook").then((m) => ({ d
 const Diary = lazy(() => import("./calendar/Diary").then((m) => ({ default: m.Diary })));
 const TodoList = lazy(() => import("./tasks/TodoList").then((m) => ({ default: m.TodoList })));
 const NotePad = lazy(() => import("./notes/NotePad").then((m) => ({ default: m.NotePad })));
+const Planner = lazy(() => import("./planner/Planner").then((m) => ({ default: m.Planner })));
 
 const TAB_ICON: Record<SectionId, string> = {
   diary: "event",
@@ -48,6 +49,7 @@ const SCREEN_TITLE: Partial<Record<SectionId, string>> = {
   todo: "Daily Planner",
   address: "Address Book",
   notepad: "Notepad",
+  planner: "Planner",
 };
 
 function Icon({ name, className }: { name: string; className?: string }) {
@@ -139,7 +141,9 @@ export function App() {
                                 ? <AddressBook />
                                 : s.id === "notepad"
                                   ? <NotePad />
-                                  : s.mvp
+                                  : s.id === "planner"
+                                    ? <Planner />
+                                    : s.mvp
                                     ? <SectionPlaceholder label={s.label} />
                                     : <ComingSoon label={s.label} />
                         }

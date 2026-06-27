@@ -12,6 +12,8 @@ vi.mock("./calendar/Diary", () => ({
   Diary: () => <div data-testid="diary" />,
 }));
 
+vi.mock("./planner/Planner", () => ({ Planner: () => <div data-testid="planner" /> }));
+
 vi.mock("./search/GlobalSearchBar", () => ({
   GlobalSearchBar: () => <div data-testid="global-search" />,
 }));
