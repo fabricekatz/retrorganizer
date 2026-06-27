@@ -10,7 +10,8 @@ const VAPID_KEY: string | undefined = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
 export interface UsePushNotifications {
   status: Status;
-  enable(): Promise<void>;
+  /** Requests permission if needed, then registers this device's FCM token. Returns true on success. */
+  enable(): Promise<boolean>;
 }
 
 export function usePushNotifications(): UsePushNotifications {
@@ -28,18 +29,21 @@ export function usePushNotifications(): UsePushNotifications {
     return () => { active = false; };
   }, []);
 
-  const enable = useCallback(async () => {
-    if (!uid || typeof Notification === "undefined") return;
+  const enable = useCallback(async (): Promise<boolean> => {
+    if (!uid || typeof Notification === "undefined") return false;
+    // Returns "granted" instantly if already granted, so this also re-registers a device.
     const permission = await Notification.requestPermission();
     setStatus(permission as Status);
-    if (permission !== "granted") return;
+    if (permission !== "granted") return false;
     const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
     const { app } = bootstrapFirebase();
     const messaging = getMessaging(app);
     const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
-    if (token) await fcmTokensRepo.registerToken(uid, token);
+    if (!token) return false;
+    await fcmTokensRepo.registerToken(uid, token);
     // Foreground messages: the in-app reminder toast already covers this, so suppress here to avoid double-notifying.
     onMessage(messaging, () => {});
+    return true;
   }, [uid]);
 
   return { status, enable };
