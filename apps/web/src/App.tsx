@@ -78,7 +78,7 @@ export function App() {
   return (
     <EventsProvider>
       <div className="min-h-screen flex flex-col items-center justify-start p-2 sm:p-4">
-        <div className="relative w-full max-w-md h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)] flex bg-white shadow-2xl rounded-sm overflow-hidden border-[6px] border-secondary">
+        <div className="relative w-full h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)] flex bg-white shadow-2xl rounded-sm overflow-hidden border-[6px] border-secondary">
           {/* Left gutter: binder rings + punched holes */}
           <div className="w-10 shrink-0 bg-surface-dim relative binder-rings border-r border-outline-variant">
             <div className="absolute inset-y-0 left-[-4px] flex flex-col justify-around py-8">
